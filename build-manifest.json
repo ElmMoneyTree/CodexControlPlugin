@@ -1,16 +1,16 @@
 {
   "name": "codex-control-plugin",
-  "version": "0.1.0+codex.local-20260911-071845",
+  "version": "0.1.0+codex.20260911074138",
   "baseVersion": "0.1.0",
-  "builtAt": "2026-09-11T07:18:45.672Z",
+  "builtAt": "2026-09-11T07:41:50.3490754Z",
   "platform": "win32",
   "architecture": "x64",
   "nodeVersion": "v24.19.0",
   "files": [
     {
       "path": ".codex-plugin/plugin.json",
-      "bytes": 847,
-      "sha256": "5196a9d0a898e6c36f9a3ab5f7ee041b90dd3d57975f87fd268ca26e8960604c"
+      "bytes": 1007,
+      "sha256": "29d1378276ca524ba98de6b9f89ea9ef9431197a45832849018b827a0d386b02"
     },
     {
       "path": "hooks/hooks.json",

@@ -1,7 +1,8 @@
 {
   "name": "codex-control-plugin",
-  "version": "0.1.0+codex.local-20260911-071845",
+  "version": "0.1.0+codex.20260911074138",
   "description": "Starts CodexControlPlugin with Codex and connects this Windows device to a Relay.",
+  "homepage": "https://github.com/ElmMoneyTree/CodexControlPlugin",
   "author": {
     "name": "Codex Control"
   },
@@ -12,6 +13,7 @@
     "shortDescription": "Connect this Codex device to Codex Control.",
     "longDescription": "Runs CodexControlPlugin when a Codex session starts, with one-time Relay pairing and local status tools.",
     "developerName": "Codex Control",
+    "websiteURL": "https://github.com/ElmMoneyTree/CodexControlPlugin",
     "category": "Productivity",
     "capabilities": [
       "Lifecycle hooks",

@@ -11,7 +11,14 @@
 
 ## 安装
 
-如果插件已经发布为 Git marketplace，可以直接使用 Git 地址安装，见 [Git 安装说明](./PLUGIN-GIT-INSTALL.zh-CN.md)。下面是本地 ZIP 安装方式。
+推荐通过独立的插件安装仓库直接安装。该仓库包含可运行的 Windows 插件发行内容，不是 Codex Control 主项目源码仓库：
+
+```powershell
+codex plugin marketplace add https://github.com/ElmMoneyTree/CodexControlPlugin.git
+codex plugin add codex-control-plugin@codex-control
+```
+
+下面是本地 ZIP 安装方式。
 
 1. 解压 `CodexControlPlugin-0.1.0-win-x64.zip` 到稳定目录。安装后不要移动或删除该目录，因为它是本地插件市场源。
 2. 在解压目录运行：

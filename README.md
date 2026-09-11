@@ -1,9 +1,17 @@
-# CodexControlPlugin 通过 Git 安装
+# CodexControlPlugin
 
 > [!IMPORTANT]
 > **这个 marketplace 当前仅支持 Windows 10/11 x64。** 插件内置 Windows `node.exe`，启动脚本使用 PowerShell，并通过 Windows 命名管道连接 Codex Desktop。macOS、Linux 和 ARM64 暂不支持。
 
-Codex CLI 可以把 Git 仓库作为插件 marketplace。CodexControlPlugin 发布后，用户无需下载 ZIP 或运行本地安装脚本，只需添加仓库并安装插件。
+这是 **CodexControlPlugin 的 Windows 插件安装仓库**。仓库中保存的是 Codex 可以直接安装的 marketplace 和已构建运行文件，不是 Codex Control 主项目的源码仓库。
+
+插件安装地址固定为：
+
+```text
+https://github.com/ElmMoneyTree/CodexControlPlugin.git
+```
+
+用户无需克隆源码、下载 ZIP 或运行构建命令，直接把这个 Git 仓库添加为 Codex marketplace 即可。
 
 ## 安装前准备
 
@@ -14,24 +22,15 @@ Codex CLI 可以把 Git 仓库作为插件 marketplace。CodexControlPlugin 发�
 
 ## 用户安装
 
-如果 marketplace 位于独立仓库的默认分支：
-
 ```powershell
-codex plugin marketplace add https://github.com/<owner>/<marketplace-repo>
+codex plugin marketplace add https://github.com/ElmMoneyTree/CodexControlPlugin.git
 codex plugin add codex-control-plugin@codex-control
 ```
 
-也可以使用简写或 SSH 地址：
+也可以使用 GitHub 简写：
 
 ```powershell
-codex plugin marketplace add <owner>/<marketplace-repo>
-codex plugin marketplace add git@github.com:<owner>/<marketplace-repo>.git
-```
-
-如果 marketplace 发布在现有代码仓库的 `plugin-marketplace` 分支：
-
-```powershell
-codex plugin marketplace add https://github.com/<owner>/<repo> --ref plugin-marketplace
+codex plugin marketplace add ElmMoneyTree/CodexControlPlugin
 codex plugin add codex-control-plugin@codex-control
 ```
 
@@ -62,34 +61,7 @@ codex plugin add codex-control-plugin@codex-control
 
 更新改变 Hook 内容时，Codex 可能要求重新确认 Hook 信任。更新后应新建任务，让 Codex 加载新版本。
 
-## 发布 marketplace 仓库
-
-在 Windows x64 构建机上，从本项目根目录运行：
-
-```powershell
-pnpm run plugin:build
-```
-
-可发布目录为：
-
-```text
-dist/CodexControlPlugin
-├── .agents/plugins/marketplace.json
-├── plugins/codex-control-plugin/
-├── README.md
-├── PLUGIN-INSTALL.zh-CN.md
-├── LICENSE
-├── .gitignore
-└── .gitattributes
-```
-
-把这个目录的**内容**提交到独立 Git 仓库的根目录，或提交到现有仓库的专用 `plugin-marketplace` 分支。不要再套一层 `CodexControlPlugin` 目录，否则 Codex 无法在仓库根目录找到 `.agents/plugins/marketplace.json`。
-
-发布内容必须包含生成后的 `plugins/codex-control-plugin/runtime/`。源码目录 `plugins/codex-control-plugin` 本身不包含 Node.js 和 Agent 运行时，不能直接作为远程 marketplace 的插件来源。
-
-当前 Windows `node.exe` 接近 GitHub 单文件 100 MiB 上限。每次升级 Node.js 后都应检查文件大小；如果超过托管平台限制，应改用发布专用仓库或下载式启动器，并重新做安装安全审查。
-
-## 仓库结构约束
+## 插件标识
 
 marketplace 文件中的名称固定为：
 
@@ -109,7 +81,7 @@ codex-control-plugin
 codex-control-plugin@codex-control
 ```
 
-Git 仓库可以是公开或私有仓库。私有仓库需要目标电脑上的 Git/GitHub 凭据能够读取该仓库。
+仓库根目录中的 `.agents/plugins/marketplace.json` 供 Codex 识别 marketplace，`plugins/codex-control-plugin/` 是可直接运行的 Windows 插件发行内容。
 
 ## 许可证
 
