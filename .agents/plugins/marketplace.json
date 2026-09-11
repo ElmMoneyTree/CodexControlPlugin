@@ -1,0 +1,20 @@
+{
+  "name": "codex-control",
+  "interface": {
+    "displayName": "CodexControlPlugin"
+  },
+  "plugins": [
+    {
+      "name": "codex-control-plugin",
+      "source": {
+        "source": "local",
+        "path": "./plugins/codex-control-plugin"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

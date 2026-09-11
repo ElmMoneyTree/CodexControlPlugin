@@ -1,0 +1,26 @@
+# Windows and macOS metadata
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+*.old
+~$*
+
+# Local archives and test output
+*.zip
+.tmp/
+evidence/
+
+# Local Agent state must never be committed
+agent-config.json
+status.json

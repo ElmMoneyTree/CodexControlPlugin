@@ -1,0 +1,6 @@
+{
+  "name": "@codex-control/desktop-ipc",
+  "private": true,
+  "type": "module",
+  "exports": "./index.mjs"
+}

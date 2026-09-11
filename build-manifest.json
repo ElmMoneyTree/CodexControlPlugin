@@ -1,0 +1,151 @@
+{
+  "name": "codex-control-plugin",
+  "version": "0.1.0+codex.local-20260911-071845",
+  "baseVersion": "0.1.0",
+  "builtAt": "2026-09-11T07:18:45.672Z",
+  "platform": "win32",
+  "architecture": "x64",
+  "nodeVersion": "v24.19.0",
+  "files": [
+    {
+      "path": ".codex-plugin/plugin.json",
+      "bytes": 847,
+      "sha256": "5196a9d0a898e6c36f9a3ab5f7ee041b90dd3d57975f87fd268ca26e8960604c"
+    },
+    {
+      "path": "hooks/hooks.json",
+      "bytes": 601,
+      "sha256": "1c5a3b2887ee6864f5b17f732c7a6941117855511e03b235aaff50c64363d4d0"
+    },
+    {
+      "path": "hooks/session-start.ps1",
+      "bytes": 876,
+      "sha256": "25a02a4f5b6878c1ff914905a6cbec67ce23255ad7ac38a823e03ec7fae115ac"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 1088,
+      "sha256": "28157e8c39ef3b64de9c20138969c13395c48a5e19da2e994815b58a369dfa88"
+    },
+    {
+      "path": "runtime/agent-core/index.mjs",
+      "bytes": 6693,
+      "sha256": "e383142c24cbc64c21e9d08fc0bbc24060b5cec1bf99066656863e4cf4a9f889"
+    },
+    {
+      "path": "runtime/agent-core/package.json",
+      "bytes": 107,
+      "sha256": "0d5e30ff4aaadf2b1515c4a1d92d6141f7b01062aa4a33b210cc0406b32d22ac"
+    },
+    {
+      "path": "runtime/agent-core/src/app-tools.mjs",
+      "bytes": 4077,
+      "sha256": "7758eff2e50dd4d28605e7244b92ee4512b1498b260c46bacdaec360fe2f669b"
+    },
+    {
+      "path": "runtime/agent-core/src/config.mjs",
+      "bytes": 1456,
+      "sha256": "3bbaa9ee01f17b114bca22ede8da1e9cfe3c660eb368523445325d6395b07a82"
+    },
+    {
+      "path": "runtime/agent-core/src/journal.mjs",
+      "bytes": 1013,
+      "sha256": "da600fce74f6db38f2198a6df741a911e5df19d7130051a8424a4f2bac01a68f"
+    },
+    {
+      "path": "runtime/agent-core/src/relay-client.mjs",
+      "bytes": 1413,
+      "sha256": "deee86eda76ff37d5d428d0bcb3da70082f08da6f96992c212f7575c721ef835"
+    },
+    {
+      "path": "runtime/agent-core/src/rollouts.mjs",
+      "bytes": 3930,
+      "sha256": "4a00570e6547609af2dfc8cafbd20eb7410f5f7d8cb5ce70d53cede362acb879"
+    },
+    {
+      "path": "runtime/agent-core/src/state.mjs",
+      "bytes": 7402,
+      "sha256": "80a9bbaa743165b4d5dcae627b254b2fe3446c714db4330c8a9c69ae216d4837"
+    },
+    {
+      "path": "runtime/desktop-ipc/index.mjs",
+      "bytes": 84,
+      "sha256": "ecf8e8ddc56391f1c1300f92eaa03bd4f0af8cc9bee8d5220bbe8c10f787de86"
+    },
+    {
+      "path": "runtime/desktop-ipc/ipc.mjs",
+      "bytes": 3563,
+      "sha256": "2eaf320b4eaf536ef885dacb2d2d973e255d1867590764475e1abcde613c3324"
+    },
+    {
+      "path": "runtime/desktop-ipc/package.json",
+      "bytes": 110,
+      "sha256": "52a7f3bc77b80bb3afc2fc042f6b2cec8cea4a3828525b46605f5cbebcf2b978"
+    },
+    {
+      "path": "runtime/desktop-ipc/tasks.mjs",
+      "bytes": 10041,
+      "sha256": "f84939a1fcfed49e15f913c8fe36107456cbde7a6ca1ff9f036e3532cd7edb7d"
+    },
+    {
+      "path": "runtime/node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "path": "runtime/protocol/index.mjs",
+      "bytes": 5716,
+      "sha256": "04036c3283a5a4ac29527ab1639b576a98956b72aedf899bb5b7a9b8fee9cf23"
+    },
+    {
+      "path": "runtime/protocol/package.json",
+      "bytes": 107,
+      "sha256": "0b483afa204adb17e1fdb47d1a3b27f77913e4509de7b86613a06da8aebe4e57"
+    },
+    {
+      "path": "scripts/agent-daemon.mjs",
+      "bytes": 7493,
+      "sha256": "c305771bbec6c91d445ceee7bd5ab87789855de7a68d0fecf4268faa1df89c23"
+    },
+    {
+      "path": "scripts/common.ps1",
+      "bytes": 2525,
+      "sha256": "0dd0ddba77c0a3a9b28c8f1950a03814bbffe1aa184c5eefa954812360192388"
+    },
+    {
+      "path": "scripts/configure-agent.ps1",
+      "bytes": 2092,
+      "sha256": "13400c8eef60b8f30613f41adc011234815937188a04cda8a961f74949f4265b"
+    },
+    {
+      "path": "scripts/daemon-lib.mjs",
+      "bytes": 2547,
+      "sha256": "93208a537bb0a4837eee83b425750f7ce706f44ab9d30581e723541bc44c5df5"
+    },
+    {
+      "path": "scripts/decrypt-token.ps1",
+      "bytes": 693,
+      "sha256": "5b975fd5ff877d74105d8abc9b02cb15ca92b8db1da7104f0500adb74dcf1d13"
+    },
+    {
+      "path": "scripts/disconnect-agent.ps1",
+      "bytes": 894,
+      "sha256": "fd79406afd131f6f25015d441424799b8b5a9eeccd930edd74e271ed571277e1"
+    },
+    {
+      "path": "scripts/get-agent-status.ps1",
+      "bytes": 582,
+      "sha256": "63af703d07f220167d396f157e7334db0dc68c0b81e09e0e1a1cc8f0f565060e"
+    },
+    {
+      "path": "skills/codex-control-plugin/SKILL.md",
+      "bytes": 2100,
+      "sha256": "a2d557efec9c410b7c5d5fc57d3db9be541042a430061edaeda387d3dbc52974"
+    },
+    {
+      "path": "THIRD_PARTY_LICENSES_NODE.txt",
+      "bytes": 157606,
+      "sha256": "148eacf7863ef4329224a29398623077200a27194aa075569faf4a0a85566ca5"
+    }
+  ]
+}

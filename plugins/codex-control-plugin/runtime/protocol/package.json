@@ -1,0 +1,6 @@
+{
+  "name": "@codex-control/protocol",
+  "private": true,
+  "type": "module",
+  "exports": "./index.mjs"
+}

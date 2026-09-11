@@ -1,0 +1,25 @@
+{
+  "name": "codex-control-plugin",
+  "version": "0.1.0+codex.local-20260911-071845",
+  "description": "Starts CodexControlPlugin with Codex and connects this Windows device to a Relay.",
+  "author": {
+    "name": "Codex Control"
+  },
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "CodexControlPlugin",
+    "shortDescription": "Connect this Codex device to Codex Control.",
+    "longDescription": "Runs CodexControlPlugin when a Codex session starts, with one-time Relay pairing and local status tools.",
+    "developerName": "Codex Control",
+    "category": "Productivity",
+    "capabilities": [
+      "Lifecycle hooks",
+      "Device pairing"
+    ],
+    "defaultPrompt": [
+      "Connect this Windows Codex device to my Codex Control Relay.",
+      "Show the CodexControlPlugin connection status."
+    ]
+  }
+}
