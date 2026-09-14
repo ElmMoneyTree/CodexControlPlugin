@@ -31,9 +31,7 @@ export class CodexDeviceAgent {
     let caller = null;
     for (const entry of index.slice(0, 5)) {
       try {
-        const state = await this.tasks.snapshot(entry.id);
-        this.snapshots.set(entry.id, state);
-        const candidate = buildAgentState([{ id: entry.id, title: entry.title, updatedAt: entry.updatedAt }], new Map([[entry.id, state]])).callerContexts[0];
+        const candidate = await this.refreshCallerContext(entry.id, entry);
         if (candidate) { caller = candidate; break; }
       } catch { /* Only desktop-owned tasks can provide a caller context. */ }
     }
@@ -85,8 +83,7 @@ export class CodexDeviceAgent {
       } else if (command.kind === 'mcp_response') {
         acknowledgement = { ok: true, result: await this.tasks.respondMcp(command.threadId, command) };
       } else if (command.kind === 'send_message') {
-        if (!this.callerContext) throw new Error('No live Codex task can authorize desktop messaging');
-        const result = await this.appTools.sendMessage(command.threadId, command.text, this.callerContext);
+        const result = await this.tasks.startTurn(command.threadId, command.text);
         try { this.snapshots.set(command.threadId, await this.tasks.snapshot(command.threadId)); } catch { /* The task may complete before its first snapshot. */ }
         acknowledgement = { ok: true, result: { submitted: true, response: result } };
       } else throw new Error(`Unsupported command kind: ${command.kind}`);
@@ -95,6 +92,17 @@ export class CodexDeviceAgent {
     }
     this.journal.complete(command.id, acknowledgement);
     return acknowledgement;
+  }
+
+  async refreshCallerContext(threadId, listed = {}) {
+    const snapshot = await this.tasks.snapshot(threadId);
+    this.snapshots.set(threadId, snapshot);
+    const candidate = buildAgentState(
+      [{ id: threadId, title: listed.title ?? snapshot?.title ?? threadId, updatedAt: listed.updatedAt ?? snapshot?.updatedAt }],
+      new Map([[threadId, snapshot]]),
+    ).callerContexts[0] ?? null;
+    if (candidate) this.callerContext = candidate;
+    return candidate;
   }
 
   async cycle() {

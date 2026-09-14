@@ -34,6 +34,24 @@ export class DesktopTasks extends EventEmitter {
       this.ipc.request('thread-follower-load-complete-history', { conversationId: id }, { targetClientId: this.owners.get(id) }).catch(error => { cleanup(); reject(error); });
     });
   }
+  async startTurn(id, text) {
+    const prompt = typeof text === 'string' ? text.trim() : '';
+    if (!prompt) throw new Error('Cannot send an empty message');
+    if (!this.owners.has(id)) await this.snapshot(id);
+    const response = await this.ipc.request('thread-follower-start-turn', {
+      conversationId: id,
+      turnStart: {
+        request: {
+          threadId: id,
+          turnTrigger: 'app_tool_send_message',
+          input: [{ type: 'text', text: prompt, text_elements: [] }],
+        },
+        context: { writingBlockContextPrepared: true },
+      },
+    }, { targetClientId: this.owners.get(id), version: 2, timeoutMs: 120_000 });
+    this.states.delete(id);
+    return response.result?.result ?? response.result ?? { submitted: true };
+  }
   approve(id, input) { return this.approveCommand(id, input); }
   async approveCommand(id, { requestId, turnId, decision }) {
     if (!['accept', 'decline', 'cancel'].includes(decision)) throw new Error('Unsupported command approval decision');

@@ -1,6 +1,6 @@
 {
   "name": "codex-control-plugin",
-  "version": "0.1.0+codex.20260911074138",
+  "version": "0.1.2+codex.20260914144000",
   "description": "Starts CodexControlPlugin with Codex and connects this Windows device to a Relay.",
   "homepage": "https://github.com/ElmMoneyTree/CodexControlPlugin",
   "author": {

@@ -1,8 +1,8 @@
 {
   "name": "codex-control-plugin",
-  "version": "0.1.0+codex.20260911074138",
-  "baseVersion": "0.1.0",
-  "builtAt": "2026-09-11T07:41:50.3490754Z",
+  "version": "0.1.2+codex.20260914144000",
+  "baseVersion": "0.1.2",
+  "builtAt": "2026-09-14T06:40:00.000Z",
   "platform": "win32",
   "architecture": "x64",
   "nodeVersion": "v24.19.0",
@@ -10,7 +10,7 @@
     {
       "path": ".codex-plugin/plugin.json",
       "bytes": 1007,
-      "sha256": "29d1378276ca524ba98de6b9f89ea9ef9431197a45832849018b827a0d386b02"
+      "sha256": "ac455f4f2b2f8914f0b0673a9cfb4cf7f1080b8afc57a00902487c0b23259ee2"
     },
     {
       "path": "hooks/hooks.json",
@@ -29,13 +29,13 @@
     },
     {
       "path": "runtime/agent-core/index.mjs",
-      "bytes": 6693,
-      "sha256": "e383142c24cbc64c21e9d08fc0bbc24060b5cec1bf99066656863e4cf4a9f889"
+      "bytes": 6852,
+      "sha256": "f4e47198b63e7d4b10f716938eaf825095acc46c6f2e3e6c55d6d1ad7c00d41e"
     },
     {
       "path": "runtime/agent-core/package.json",
       "bytes": 107,
-      "sha256": "0d5e30ff4aaadf2b1515c4a1d92d6141f7b01062aa4a33b210cc0406b32d22ac"
+      "sha256": "97dc27023bb422fab38a6ba595818b2a22301742205551bce22109d99d04eae6"
     },
     {
       "path": "runtime/agent-core/src/app-tools.mjs",
@@ -84,8 +84,8 @@
     },
     {
       "path": "runtime/desktop-ipc/tasks.mjs",
-      "bytes": 10041,
-      "sha256": "f84939a1fcfed49e15f913c8fe36107456cbde7a6ca1ff9f036e3532cd7edb7d"
+      "bytes": 10805,
+      "sha256": "dd2c9aaf038c2219a313c547f47023d54e74b26839355cab4388c1dd54ed2160"
     },
     {
       "path": "runtime/node.exe",
@@ -105,7 +105,7 @@
     {
       "path": "scripts/agent-daemon.mjs",
       "bytes": 7493,
-      "sha256": "c305771bbec6c91d445ceee7bd5ab87789855de7a68d0fecf4268faa1df89c23"
+      "sha256": "4e870ed5bc79a8428f892966beeeab1fe46822a259d2e94d70744b606fda6a51"
     },
     {
       "path": "scripts/common.ps1",
