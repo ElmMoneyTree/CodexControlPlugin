@@ -1,0 +1,21 @@
+# Windows runtime executable is injected by the release build.
+# The JavaScript runtime source is tracked in this repository.
+runtime/node.exe
+
+# Dependencies and build output
+node_modules/
+dist/
+coverage/
+
+# Local configuration and logs
+.env
+.env.*
+*.log
+agent-config.json
+status.json
+
+# Editor and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

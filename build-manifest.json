@@ -1,16 +1,21 @@
 {
   "name": "codex-control-plugin",
-  "version": "0.1.2+codex.20260914144000",
+  "version": "0.1.2+codex.local-20260914-065212",
   "baseVersion": "0.1.2",
-  "builtAt": "2026-09-14T06:40:00.000Z",
+  "builtAt": "2026-09-14T06:52:12.069Z",
   "platform": "win32",
   "architecture": "x64",
   "nodeVersion": "v24.19.0",
   "files": [
     {
       "path": ".codex-plugin/plugin.json",
-      "bytes": 1007,
-      "sha256": "ac455f4f2b2f8914f0b0673a9cfb4cf7f1080b8afc57a00902487c0b23259ee2"
+      "bytes": 1061,
+      "sha256": "a937ea5ab5a760ffa1298ca8745c3f49c58abdbd6431cae97a090ccc5d604ef3"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 380,
+      "sha256": "8df67d7a111f975bdcff52255793dbd195d8f2f1c497ffc81cdf2804fc74765b"
     },
     {
       "path": "hooks/hooks.json",
@@ -28,64 +33,69 @@
       "sha256": "28157e8c39ef3b64de9c20138969c13395c48a5e19da2e994815b58a369dfa88"
     },
     {
+      "path": "README.md",
+      "bytes": 2199,
+      "sha256": "f1339725b9e576cb8dbdb6b5767f71d615f9abae60ba06a6feb7b06155040f0d"
+    },
+    {
       "path": "runtime/agent-core/index.mjs",
-      "bytes": 6852,
-      "sha256": "f4e47198b63e7d4b10f716938eaf825095acc46c6f2e3e6c55d6d1ad7c00d41e"
+      "bytes": 6983,
+      "sha256": "b1495d1f676c297922e29b76e67f62fd1a198d05586ba790ae3167c4d700255d"
     },
     {
       "path": "runtime/agent-core/package.json",
-      "bytes": 107,
-      "sha256": "97dc27023bb422fab38a6ba595818b2a22301742205551bce22109d99d04eae6"
+      "bytes": 113,
+      "sha256": "b7c71638e37ded4452d03baf8b493c5e86aca9b4b725b4feae02d82dfa99eab6"
     },
     {
       "path": "runtime/agent-core/src/app-tools.mjs",
-      "bytes": 4077,
-      "sha256": "7758eff2e50dd4d28605e7244b92ee4512b1498b260c46bacdaec360fe2f669b"
+      "bytes": 4181,
+      "sha256": "22525008543ed1ab4c297fb1e6c836c954304a2c6ba1bf96cabd4a80e6689cac"
     },
     {
       "path": "runtime/agent-core/src/config.mjs",
-      "bytes": 1456,
-      "sha256": "3bbaa9ee01f17b114bca22ede8da1e9cfe3c660eb368523445325d6395b07a82"
+      "bytes": 1493,
+      "sha256": "436e1cb2af099aa75399720ccf7947da15f387def2aaf8d11d12ca1d3fe68fb5"
     },
     {
       "path": "runtime/agent-core/src/journal.mjs",
-      "bytes": 1013,
-      "sha256": "da600fce74f6db38f2198a6df741a911e5df19d7130051a8424a4f2bac01a68f"
+      "bytes": 1039,
+      "sha256": "7f6a72cd3e49a1cf2f081a3900678fc8a0345355acac8fe846192894824328b5"
     },
     {
       "path": "runtime/agent-core/src/relay-client.mjs",
-      "bytes": 1413,
-      "sha256": "deee86eda76ff37d5d428d0bcb3da70082f08da6f96992c212f7575c721ef835"
+      "bytes": 1454,
+      "sha256": "09f0096b29e8b2cedd79d7d09d36c8a9a4b2dc814efae07bcd6d9ba2071e151d"
     },
     {
       "path": "runtime/agent-core/src/rollouts.mjs",
-      "bytes": 3930,
-      "sha256": "4a00570e6547609af2dfc8cafbd20eb7410f5f7d8cb5ce70d53cede362acb879"
+      "bytes": 4012,
+      "sha256": "0364b1ad48fdd2d4279783c6a9d2cafddcd4db0369f2c331f111c6a2d3bd5ef5"
     },
     {
       "path": "runtime/agent-core/src/state.mjs",
-      "bytes": 7402,
-      "sha256": "80a9bbaa743165b4d5dcae627b254b2fe3446c714db4330c8a9c69ae216d4837"
+      "bytes": 7577,
+      "sha256": "7868b4dd512108af623ab1366c50a72fa8901edae7942f5eb350fabbae0c4dd8"
     },
     {
       "path": "runtime/desktop-ipc/index.mjs",
-      "bytes": 84,
-      "sha256": "ecf8e8ddc56391f1c1300f92eaa03bd4f0af8cc9bee8d5220bbe8c10f787de86"
+      "bytes": 86,
+      "sha256": "ec8f8eac4b28bf6719ffae1c7db3802613e055edb4a457cad349b4b0daa71e3a"
     },
     {
       "path": "runtime/desktop-ipc/ipc.mjs",
-      "bytes": 3563,
-      "sha256": "2eaf320b4eaf536ef885dacb2d2d973e255d1867590764475e1abcde613c3324"
+      "bytes": 3625,
+      "sha256": "d62d8cbafaa8635f39abaa83cc64f5dcc7564985b7c578bc86ad14c3ea3a53ed"
     },
     {
       "path": "runtime/desktop-ipc/package.json",
-      "bytes": 110,
-      "sha256": "52a7f3bc77b80bb3afc2fc042f6b2cec8cea4a3828525b46605f5cbebcf2b978"
+      "bytes": 116,
+      "sha256": "ae5acd8d14beb8eac71c45882da59273efa8dbe871f147df20661b440378b747"
     },
     {
       "path": "runtime/desktop-ipc/tasks.mjs",
-      "bytes": 10805,
-      "sha256": "dd2c9aaf038c2219a313c547f47023d54e74b26839355cab4388c1dd54ed2160"
+      "bytes": 10993,
+      "sha256": "926fe3ed2f4b31c477033f0416a91211a46220efe5fd6835c90444d0b1f06662"
     },
     {
       "path": "runtime/node.exe",
@@ -94,18 +104,18 @@
     },
     {
       "path": "runtime/protocol/index.mjs",
-      "bytes": 5716,
-      "sha256": "04036c3283a5a4ac29527ab1639b576a98956b72aedf899bb5b7a9b8fee9cf23"
+      "bytes": 5843,
+      "sha256": "970b1c8063e1fa23da9ba283f6f6401071b794886bfb847b6a906bc3c0343618"
     },
     {
       "path": "runtime/protocol/package.json",
-      "bytes": 107,
-      "sha256": "0b483afa204adb17e1fdb47d1a3b27f77913e4509de7b86613a06da8aebe4e57"
+      "bytes": 113,
+      "sha256": "fe088d07c03137c90ea3f34afcdaf03444e8af4a7f220b9695bedd5fa0d151fe"
     },
     {
       "path": "scripts/agent-daemon.mjs",
-      "bytes": 7493,
-      "sha256": "4e870ed5bc79a8428f892966beeeab1fe46822a259d2e94d70744b606fda6a51"
+      "bytes": 7704,
+      "sha256": "49100cbfa939aed1aa3a00f1f7df30bc81cf584dc056c25eb23351e2c6f2fdeb"
     },
     {
       "path": "scripts/common.ps1",
