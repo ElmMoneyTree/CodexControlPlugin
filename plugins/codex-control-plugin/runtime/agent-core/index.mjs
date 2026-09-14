@@ -1,5 +1,6 @@
 import { DesktopIPC, DesktopTasks } from '../desktop-ipc/index.mjs';
 import { AppTools } from './src/app-tools.mjs';
+import { resumeWithCodexCli } from './src/cli-resume.mjs';
 import { CommandJournal, journalPath } from './src/journal.mjs';
 import { RelayClient } from './src/relay-client.mjs';
 import { RolloutReader } from './src/rollouts.mjs';
@@ -14,6 +15,7 @@ export class CodexDeviceAgent {
     this.journal = new CommandJournal(journalPath(config.configPath));
     this.snapshots = new Map();
     this.rollouts = new RolloutReader();
+    this.resumeTask = resumeWithCodexCli;
   }
 
   async connectDesktop() {
@@ -83,7 +85,13 @@ export class CodexDeviceAgent {
       } else if (command.kind === 'mcp_response') {
         acknowledgement = { ok: true, result: await this.tasks.respondMcp(command.threadId, command) };
       } else if (command.kind === 'send_message') {
-        const result = await this.tasks.startTurn(command.threadId, command.text);
+        let result;
+        try {
+          result = await this.tasks.startTurn(command.threadId, command.text);
+        } catch (error) {
+          if (!isMissingDesktopOwner(error)) throw error;
+          result = await this.resumeTask(command.threadId, command.text);
+        }
         try { this.snapshots.set(command.threadId, await this.tasks.snapshot(command.threadId)); } catch { /* The task may complete before its first snapshot. */ }
         acknowledgement = { ok: true, result: { submitted: true, response: result } };
       } else throw new Error(`Unsupported command kind: ${command.kind}`);
@@ -124,8 +132,14 @@ export class CodexDeviceAgent {
 }
 
 export { AppTools, FrameDecoder } from './src/app-tools.mjs';
+export { resumeWithCodexCli } from './src/cli-resume.mjs';
 export { defaultConfigPath, parseArguments, readConfig, writeConfig } from './src/config.mjs';
 export { CommandJournal, journalPath } from './src/journal.mjs';
 export { RelayClient } from './src/relay-client.mjs';
 export { RolloutReader, parseRollout } from './src/rollouts.mjs';
 export { buildAgentState, defaultSessionIndexPath, extractLatestTurn, readSessionIndex } from './src/state.mjs';
+
+function isMissingDesktopOwner(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  return /no-client-found|thread stream owner became unavailable/i.test(message);
+}

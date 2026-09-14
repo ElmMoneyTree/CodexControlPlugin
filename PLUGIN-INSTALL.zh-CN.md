@@ -20,7 +20,7 @@ codex plugin add codex-control-plugin@codex-control
 
 下面是本地 ZIP 安装方式。
 
-1. 解压 `CodexControlPlugin-0.1.2-win-x64.zip` 到稳定目录。安装后不要移动或删除该目录，因为它是本地插件市场源。
+1. 解压 `CodexControlPlugin-0.1.3-win-x64.zip` 到稳定目录。安装后不要移动或删除该目录，因为它是本地插件市场源。
 2. 在解压目录运行：
 
    ```powershell

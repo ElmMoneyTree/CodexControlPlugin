@@ -1,16 +1,16 @@
 {
   "name": "codex-control-plugin",
-  "version": "0.1.2+codex.local-20260914-065212",
-  "baseVersion": "0.1.2",
-  "builtAt": "2026-09-14T06:52:12.069Z",
+  "version": "0.1.3+codex.20260914151500",
+  "baseVersion": "0.1.3",
+  "builtAt": "2026-09-14T07:15:00.000Z",
   "platform": "win32",
   "architecture": "x64",
   "nodeVersion": "v24.19.0",
   "files": [
     {
       "path": ".codex-plugin/plugin.json",
-      "bytes": 1061,
-      "sha256": "a937ea5ab5a760ffa1298ca8745c3f49c58abdbd6431cae97a090ccc5d604ef3"
+      "bytes": 1082,
+      "sha256": "1829ea96958a1e917b653ed4000ecf6e572b046d8e08ac6c4ebe266a0020657d"
     },
     {
       "path": ".gitignore",
@@ -39,18 +39,23 @@
     },
     {
       "path": "runtime/agent-core/index.mjs",
-      "bytes": 6983,
-      "sha256": "b1495d1f676c297922e29b76e67f62fd1a198d05586ba790ae3167c4d700255d"
+      "bytes": 7554,
+      "sha256": "9f651fcc1563043cd3c415a7265e3153fc710fcedbdcbf49f723efdd5356def5"
     },
     {
       "path": "runtime/agent-core/package.json",
       "bytes": 113,
-      "sha256": "b7c71638e37ded4452d03baf8b493c5e86aca9b4b725b4feae02d82dfa99eab6"
+      "sha256": "cc45047c48879659faebec3b223122fcd357b26ad04ff0873b952d292070e9b5"
     },
     {
       "path": "runtime/agent-core/src/app-tools.mjs",
       "bytes": 4181,
       "sha256": "22525008543ed1ab4c297fb1e6c836c954304a2c6ba1bf96cabd4a80e6689cac"
+    },
+    {
+      "path": "runtime/agent-core/src/cli-resume.mjs",
+      "bytes": 1453,
+      "sha256": "694219234f635ac3bd4b8342ba8ac94b437eb35bac7ad48b627f0cdc036833e5"
     },
     {
       "path": "runtime/agent-core/src/config.mjs",
@@ -115,7 +120,7 @@
     {
       "path": "scripts/agent-daemon.mjs",
       "bytes": 7704,
-      "sha256": "49100cbfa939aed1aa3a00f1f7df30bc81cf584dc056c25eb23351e2c6f2fdeb"
+      "sha256": "23a57a7593b378138d7394de862de37d446aab32a9df7641a3e2f7baab727568"
     },
     {
       "path": "scripts/common.ps1",

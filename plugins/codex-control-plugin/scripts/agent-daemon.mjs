@@ -13,7 +13,7 @@ import {
   writeStatus,
 } from './daemon-lib.mjs';
 
-const VERSION = '0.1.2';
+const VERSION = '0.1.3';
 const CYCLE_INTERVAL_MS = positiveNumber(process.env.CODEX_CONTROL_AGENT_INTERVAL_MS, 3_000);
 const DESKTOP_GRACE_MS = positiveNumber(process.env.CODEX_CONTROL_AGENT_DESKTOP_GRACE_MS, 90_000);
 const options = parseDaemonArguments(process.argv.slice(2));
