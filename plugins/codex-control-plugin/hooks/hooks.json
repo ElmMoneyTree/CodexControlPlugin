@@ -9,8 +9,8 @@
             "type": "command",
             "command": "echo 'CodexControlPlugin currently supports Windows only'",
             "commandWindows": "powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"${PLUGIN_ROOT}/hooks/session-start.ps1\"",
-            "timeout": 15,
-            "statusMessage": "Starting CodexControlPlugin"
+            "timeout": 30,
+            "statusMessage": "Connecting this device to Codex Control"
           }
         ]
       }

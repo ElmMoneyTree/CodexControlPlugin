@@ -42,6 +42,48 @@ function Protect-CurrentUserText {
   }
 }
 
+function Unprotect-CurrentUserText {
+  param([Parameter(Mandatory = $true)][string]$Value)
+  Add-Type -AssemblyName System.Security
+  $protected = [Convert]::FromBase64String($Value)
+  $plain = [Security.Cryptography.ProtectedData]::Unprotect(
+    $protected,
+    $null,
+    [Security.Cryptography.DataProtectionScope]::CurrentUser
+  )
+  try {
+    return [Text.Encoding]::UTF8.GetString($plain)
+  } finally {
+    [Array]::Clear($plain, 0, $plain.Length)
+  }
+}
+
+function Get-UnixTimeMilliseconds {
+  $epoch = [DateTime]::SpecifyKind([DateTime]::Parse('1970-01-01T00:00:00'), [DateTimeKind]::Utc)
+  return [Int64](([DateTime]::UtcNow - $epoch).TotalMilliseconds)
+}
+
+function Get-ClaimWatcherMutexName {
+  param([Parameter(Mandatory = $true)][string]$DataDirectory)
+  $sha = [Security.Cryptography.SHA256]::Create()
+  try {
+    $bytes = [Text.Encoding]::UTF8.GetBytes([IO.Path]::GetFullPath($DataDirectory).ToLowerInvariant())
+    $digest = $sha.ComputeHash($bytes)
+    $suffix = ([BitConverter]::ToString($digest)).Replace('-', '').Substring(0, 24).ToLowerInvariant()
+    return "Local\CodexControlClaimWatcher-$suffix"
+  } finally {
+    $sha.Dispose()
+  }
+}
+
+function Start-ClaimWatcher {
+  param([Parameter(Mandatory = $true)][string]$DataDirectory)
+  $powershell = Join-Path ($env:SystemRoot) 'System32\WindowsPowerShell\v1.0\powershell.exe'
+  $watcher = Join-Path (Get-PluginRoot) 'scripts\watch-device-claim.ps1'
+  $arguments = @('-NoLogo', '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', "`"$watcher`"", '-DataDirectory', "`"$DataDirectory`"")
+  Start-Process -FilePath $powershell -ArgumentList $arguments -WindowStyle Hidden | Out-Null
+}
+
 function Set-CurrentUserOnlyAcl {
   param([Parameter(Mandatory = $true)][string]$Path)
   try {
@@ -67,4 +109,20 @@ function Get-RelayOrigin {
     throw 'Relay URL cannot include a path.'
   }
   return $uri.GetLeftPart([UriPartial]::Authority).TrimEnd('/')
+}
+
+function Get-DeviceClaimLinks {
+  param(
+    [Parameter(Mandatory = $true)][string]$RelayOrigin,
+    [Parameter(Mandatory = $true)][string]$ClaimID,
+    [Parameter(Mandatory = $true)][string]$ClaimSecret
+  )
+  $origin = Get-RelayOrigin -Value $RelayOrigin
+  if (-not $ClaimID -or -not $ClaimSecret) { throw 'Claim ID and secret are required.' }
+  $escapedClaimID = [Uri]::EscapeDataString($ClaimID)
+  $escapedSecret = [Uri]::EscapeDataString($ClaimSecret)
+  return [ordered]@{
+    claimUrl = "$origin/claim/$escapedClaimID#secret=$escapedSecret"
+    claimUri = "codexcontrol://claim?relay=$([Uri]::EscapeDataString($origin))&id=$escapedClaimID#secret=$escapedSecret"
+  }
 }

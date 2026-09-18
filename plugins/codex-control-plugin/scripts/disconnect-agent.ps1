@@ -15,8 +15,10 @@ if ((Test-Path -LiteralPath $node -PathType Leaf) -and (Test-Path -LiteralPath $
 
 $configPath = Join-Path $data 'agent-config.json'
 $journalPath = Join-Path $data 'agent-config.json.journal.json'
+$pendingPath = Join-Path $data 'pending-claim.json'
 if (Test-Path -LiteralPath $configPath -PathType Leaf) { Remove-Item -LiteralPath $configPath -Force }
 if (Test-Path -LiteralPath $journalPath -PathType Leaf) { Remove-Item -LiteralPath $journalPath -Force }
+if (Test-Path -LiteralPath $pendingPath -PathType Leaf) { Remove-Item -LiteralPath $pendingPath -Force }
 
 [ordered]@{
   disconnected = $true

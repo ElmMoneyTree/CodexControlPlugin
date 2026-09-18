@@ -1,7 +1,7 @@
 {
   "name": "codex-control-plugin",
-  "version": "0.1.3+codex.local-20260914-073100",
-  "description": "Starts CodexControlPlugin with Codex and connects this Windows device to a Relay.",
+  "version": "0.2.0+codex.local-20260918-064813",
+  "description": "Connects this Windows Codex device through secure account-based device claiming.",
   "homepage": "https://github.com/ElmMoneyTree/CodexControlPlugin",
   "repository": "https://github.com/ElmMoneyTree/CodexControlPluginCode",
   "author": {
@@ -12,16 +12,17 @@
   "interface": {
     "displayName": "CodexControlPlugin",
     "shortDescription": "Connect this Codex device to Codex Control.",
-    "longDescription": "Runs CodexControlPlugin when a Codex session starts, with one-time Relay pairing and local status tools.",
+    "longDescription": "Runs CodexControlPlugin with Codex, creates a key-backed device identity, and lets a signed-in user claim the device through a one-time browser or mobile link.",
     "developerName": "Codex Control",
     "websiteURL": "https://github.com/ElmMoneyTree/CodexControlPlugin",
     "category": "Productivity",
     "capabilities": [
       "Lifecycle hooks",
-      "Device pairing"
+      "Device claiming",
+      "Multi-tenant relay"
     ],
     "defaultPrompt": [
-      "Connect this Windows Codex device to my Codex Control Relay.",
+      "Let me claim this Windows Codex device in Codex Control.",
       "Show the CodexControlPlugin connection status."
     ]
   }

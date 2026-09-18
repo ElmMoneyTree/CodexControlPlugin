@@ -1,16 +1,16 @@
 {
   "name": "codex-control-plugin",
-  "version": "0.1.3+codex.local-20260914-073100",
-  "baseVersion": "0.1.3",
-  "builtAt": "2026-09-14T07:31:00.162Z",
+  "version": "0.2.0+codex.local-20260918-064813",
+  "baseVersion": "0.2.0",
+  "builtAt": "2026-09-18T06:48:13.698Z",
   "platform": "win32",
   "architecture": "x64",
   "nodeVersion": "v24.19.0",
   "files": [
     {
       "path": ".codex-plugin/plugin.json",
-      "bytes": 1061,
-      "sha256": "74e236969870a53f3fb06570ff8b7bdda345477ea6fea4990805d950037ca49b"
+      "bytes": 1140,
+      "sha256": "4fb08558385160f74276cb4a5ac80ee5b8efe0789937a4fbe30fb22bbd1a281f"
     },
     {
       "path": ".gitignore",
@@ -19,13 +19,13 @@
     },
     {
       "path": "hooks/hooks.json",
-      "bytes": 601,
-      "sha256": "1c5a3b2887ee6864f5b17f732c7a6941117855511e03b235aaff50c64363d4d0"
+      "bytes": 632,
+      "sha256": "4e1a2de6d5350d0e9f8b9076fd949931f979378ff5b5bed9297211c4752442b2"
     },
     {
       "path": "hooks/session-start.ps1",
-      "bytes": 876,
-      "sha256": "25a02a4f5b6878c1ff914905a6cbec67ce23255ad7ac38a823e03ec7fae115ac"
+      "bytes": 3056,
+      "sha256": "ca1b098c56d7e1eee7c6bdd6ccdb02763b869644b160eef5c2c5c1e9768bb202"
     },
     {
       "path": "LICENSE",
@@ -34,8 +34,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 2199,
-      "sha256": "f1339725b9e576cb8dbdb6b5767f71d615f9abae60ba06a6feb7b06155040f0d"
+      "bytes": 4595,
+      "sha256": "f05189a8dbd3fcf008b0a2baeeb49ac1f72872a83ed5e32c2425321d6800400d"
     },
     {
       "path": "runtime/agent-core/index.mjs",
@@ -45,7 +45,7 @@
     {
       "path": "runtime/agent-core/package.json",
       "bytes": 113,
-      "sha256": "cc45047c48879659faebec3b223122fcd357b26ad04ff0873b952d292070e9b5"
+      "sha256": "dc86cc6c720adb994e9c90c3cf10b042e08ffb206595ead8ddc9589d3d52f4d1"
     },
     {
       "path": "runtime/agent-core/src/app-tools.mjs",
@@ -120,17 +120,22 @@
     {
       "path": "scripts/agent-daemon.mjs",
       "bytes": 7704,
-      "sha256": "23a57a7593b378138d7394de862de37d446aab32a9df7641a3e2f7baab727568"
+      "sha256": "34b733716921ea3bd5857dd0f0b57a51277b625f9b8fa524a2186f46f0ec4969"
     },
     {
       "path": "scripts/common.ps1",
-      "bytes": 2525,
-      "sha256": "0dd0ddba77c0a3a9b28c8f1950a03814bbffe1aa184c5eefa954812360192388"
+      "bytes": 4996,
+      "sha256": "3b7ebf675cc7c5f2f0f5cebec5de0cb5900c18f3b0a59302d1b88e85af6f7b6c"
     },
     {
       "path": "scripts/configure-agent.ps1",
       "bytes": 2092,
       "sha256": "13400c8eef60b8f30613f41adc011234815937188a04cda8a961f74949f4265b"
+    },
+    {
+      "path": "scripts/create-device-claim.mjs",
+      "bytes": 3863,
+      "sha256": "dab3c325a5a423cc723e417e839b2cfcc41d72f0ea23ebf3f56bf0a04784a426"
     },
     {
       "path": "scripts/daemon-lib.mjs",
@@ -144,8 +149,8 @@
     },
     {
       "path": "scripts/disconnect-agent.ps1",
-      "bytes": 894,
-      "sha256": "fd79406afd131f6f25015d441424799b8b5a9eeccd930edd74e271ed571277e1"
+      "bytes": 1077,
+      "sha256": "94bdc62d32998a6745956105a5954e0d42af23e15e8bad64019a30e92812bce9"
     },
     {
       "path": "scripts/get-agent-status.ps1",
@@ -153,9 +158,24 @@
       "sha256": "63af703d07f220167d396f157e7334db0dc68c0b81e09e0e1a1cc8f0f565060e"
     },
     {
+      "path": "scripts/start-device-claim.ps1",
+      "bytes": 6800,
+      "sha256": "d7069612dacd067c7f9f4f42f61441fdb97449bb898ccf9332909dceb00800b3"
+    },
+    {
+      "path": "scripts/verify-device-claim.ps1",
+      "bytes": 6298,
+      "sha256": "0ae2e1831a2c28311350a0d59d34c8d37ad9b0e8b7f4bf7bcf8c7d0c06b5227a"
+    },
+    {
+      "path": "scripts/watch-device-claim.ps1",
+      "bytes": 4927,
+      "sha256": "08884a673140677979ad73f9d4e2e10da8c4fa104869e86ee680832341bd324e"
+    },
+    {
       "path": "skills/codex-control-plugin/SKILL.md",
-      "bytes": 2100,
-      "sha256": "a2d557efec9c410b7c5d5fc57d3db9be541042a430061edaeda387d3dbc52974"
+      "bytes": 4017,
+      "sha256": "ae0827e1b391e3c41555534f633e17612d2e5a69095e9b135ac92caf2a46cac2"
     },
     {
       "path": "THIRD_PARTY_LICENSES_NODE.txt",
