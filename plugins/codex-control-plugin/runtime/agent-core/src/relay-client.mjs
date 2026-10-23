@@ -17,6 +17,20 @@ export class RelayClient {
     return (await this.request('/agent/commands')).commands;
   }
 
+  async conversationRequests() {
+    return (await this.request('/agent/conversation-requests')).requests;
+  }
+
+  async projectRequests() { return (await this.request('/agent/project-requests')).requests; }
+
+  async respondProjects(id, catalog) {
+    return this.request(`/agent/project-responses/${encodeURIComponent(id)}`, { method: 'POST', body: catalog });
+  }
+
+  async respondConversation(id, page) {
+    return this.request(`/agent/conversation-responses/${encodeURIComponent(id)}`, { method: 'POST', body: page });
+  }
+
   async acknowledge(id, result) {
     return this.request(`/agent/commands/${encodeURIComponent(id)}/ack`, { method: 'POST', body: result });
   }
@@ -35,7 +49,7 @@ export class RelayClient {
       signal: AbortSignal.timeout(this.timeoutMs),
     });
     const value = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(value.error ?? `Relay returned HTTP ${response.status}`);
+    if (!response.ok) throw Object.assign(new Error(value.error ?? `Relay returned HTTP ${response.status}`), { status: response.status });
     return value;
   }
 }

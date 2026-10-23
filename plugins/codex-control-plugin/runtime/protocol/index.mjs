@@ -1,4 +1,5 @@
 export const COMMAND_KINDS = new Set([
+  'create_thread',
   'send_message',
   'command_approval',
   'file_approval',
@@ -41,6 +42,7 @@ export function parseAgentState(input) {
   }
   const tasks = input.tasks.map((task) => ({
     threadId: requireString(task.threadId, 'threadId', 100),
+    backend: parseBackend(task.backend ?? 'codex'),
     title: requireString(task.title, 'title', 500),
     project: optionalString(task.project, 'project', 1_000),
     status: requireString(task.status, 'status', 40),
@@ -63,7 +65,9 @@ export function parseCommand(input) {
   if (!input || typeof input !== 'object') throw new ProtocolError('Command is invalid');
   const kind = requireString(input.kind, 'kind', 40);
   if (!COMMAND_KINDS.has(kind)) throw new ProtocolError('Command kind is unsupported');
-  const threadId = requireString(input.threadId, 'threadId', 100);
+  const threadId = kind === 'create_thread' ? null : requireString(input.threadId, 'threadId', 100);
+  const backend = input.backend == null && kind !== 'create_thread' ? null : parseBackend(input.backend);
+  const projectId = optionalString(input.projectId, 'projectId', 200);
   const requestId = optionalString(input.requestId == null ? null : String(input.requestId), 'requestId', 100);
   const turnId = optionalString(input.turnId, 'turnId', 100);
   const text = optionalString(input.text, 'text', 20_000);
@@ -72,6 +76,7 @@ export function parseCommand(input) {
   const answers = input.answers == null ? null : parseAnswers(input.answers);
   const content = input.content == null ? null : boundedObject(input.content, 'content', 50_000);
   if (kind === 'send_message' && !text) throw new ProtocolError('Message text is required');
+  if (kind === 'create_thread' && (!text || input.threadId != null || requestId || turnId)) throw new ProtocolError('New chat requires an initial message and no existing thread identity');
   if (kind === 'command_approval' || kind === 'file_approval') {
     if (!requestId || !turnId || !decision || !APPROVAL_DECISIONS.has(decision)) {
       throw new ProtocolError('Approval identity or decision is invalid');
@@ -90,7 +95,12 @@ export function parseCommand(input) {
       throw new ProtocolError('MCP response identity, action, or content is invalid');
     }
   }
-  return { kind, threadId, requestId, turnId, text, decision, answers, action, content };
+  return { kind, threadId, requestId, turnId, text, decision, answers, action, content, ...(backend ? { backend } : {}), ...(projectId ? { projectId } : {}) };
+}
+
+function parseBackend(value) {
+  if (!['codex', 'chatgpt'].includes(value)) throw new ProtocolError('Chat backend is unsupported');
+  return value;
 }
 
 function parseAnswers(value) {

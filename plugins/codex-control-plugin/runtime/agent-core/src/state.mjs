@@ -8,7 +8,10 @@ export function defaultSessionIndexPath() {
 }
 
 export function readSessionIndex(file = defaultSessionIndexPath(), limit = 100) {
-  const lines = fs.readFileSync(file, 'utf8').split(/\r?\n/).filter(Boolean);
+  let content;
+  try { content = fs.readFileSync(file, 'utf8'); }
+  catch (error) { if (error.code === 'ENOENT') return []; throw error; }
+  const lines = content.split(/\r?\n/).filter(Boolean);
   const entries = [], seen = new Set();
   for (let index = lines.length - 1; index >= 0 && entries.length < limit; index -= 1) {
     try {
@@ -23,9 +26,8 @@ export function readSessionIndex(file = defaultSessionIndexPath(), limit = 100) 
 
 export function extractLatestTurn(state) {
   const entities = state?.turnHistory?.history?.entitiesByKey ?? {};
-  const turns = Object.entries(entities)
-    .filter(([key, value]) => key.startsWith('turn:') && value && typeof value === 'object')
-    .map(([, value]) => value)
+  const turns = [...Object.values(entities), ...(Array.isArray(state?.turns) ? state.turns : [])]
+    .filter(value => value && typeof value === 'object')
     .filter(turn => typeof turn.turnId === 'string')
     .sort((left, right) => (right.turnStartedAtMs ?? 0) - (left.turnStartedAtMs ?? 0));
   return turns[0] ?? null;
@@ -41,11 +43,12 @@ export function buildAgentState(listedTasks, snapshots = new Map()) {
     const pending = snapshot?.requests ?? [];
     const latestMessage = latestAgentMessage(latestTurn) ?? textOrNull(listed.latestMessage, 20_000);
     const runtime = snapshot?.threadRuntimeStatus;
-    const status = deriveStatus(listed.status, runtime, latestTurn, pending);
+    const status = deriveStatus(listed, runtime, latestTurn, pending);
     const updatedAt = normalizeTimestamp(snapshot?.updatedAt ?? listed.updatedAt);
     tasks.push({
       threadId,
-      title: snapshot?.title || listed.title || threadId,
+      backend: listed.backend ?? listed.kind ?? 'codex',
+      title: listed.title || snapshot?.title || threadId,
       project: snapshot?.cwd || listed.cwd || listed.project || null,
       status,
       summary: listed.summary || null,
@@ -70,12 +73,35 @@ function deriveStatus(listed, runtime, latestTurn, requests) {
   ].includes(request.method))) return 'waiting_approval';
   if (requests.length) return 'waiting_input';
   if (runtime?.activeFlags?.includes('waitingOnApproval')) return 'waiting_approval';
-  if (runtime?.type === 'active' || listed === 'active') return 'running';
-  if (listed === 'notLoaded') return 'not_loaded';
-  if (latestTurn?.status === 'failed' || latestTurn?.error) return 'failed';
-  if (latestTurn?.status === 'completed') return 'completed';
-  if (listed === 'idle') return 'completed';
-  return listed || runtime?.type || 'idle';
+  const live = normalizeStatus(runtime?.type), advertised = normalizeStatus(listed.status);
+  if (['active', 'running', 'in_progress'].includes(live)) return 'running';
+  if (['active', 'running', 'in_progress'].includes(advertised)) return 'running';
+  if (['queued', 'waiting_approval', 'waiting_input'].includes(advertised)) return advertised;
+
+  // A listed "idle"/"completed" value is not a successful turn record. Use
+  // the latest actual turn or a lifecycle event from its rollout instead.
+  const rollout = listed.rolloutState;
+  const newerRolloutTurn = rollout?.latestTurnId && latestTurn?.turnId
+    && rollout.latestTurnId !== latestTurn.turnId
+    && Number(rollout.updatedAt) > Number(latestTurn.turnStartedAtMs ?? Infinity);
+  const evidence = newerRolloutTurn || !latestTurn
+    ? (rollout?.latestTurnId ? rollout : null) : latestTurn;
+  const status = normalizeStatus(evidence?.status);
+  if (['cancelled', 'canceled', 'interrupted', 'aborted'].includes(status)) return 'cancelled';
+  if (evidence?.error || ['failed', 'error'].includes(status)) return 'failed';
+  if (status === 'completed') return 'completed';
+  if (['active', 'running', 'in_progress'].includes(status)) return 'running';
+  if (['queued', 'waiting_approval', 'waiting_input'].includes(status)) return status;
+
+  if (['cancelled', 'canceled', 'interrupted', 'aborted'].includes(advertised)) return 'cancelled';
+  if (['failed', 'error'].includes(advertised)) return 'failed';
+  if (advertised === 'notloaded' || advertised === 'not_loaded') return 'not_loaded';
+  if (live === 'idle' || advertised === 'idle') return 'idle';
+  return 'unknown';
+}
+
+function normalizeStatus(value) {
+  return typeof value === 'string' ? value.trim().replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase().replaceAll('-', '_') : '';
 }
 
 function mapRequest(threadId, request, state) {

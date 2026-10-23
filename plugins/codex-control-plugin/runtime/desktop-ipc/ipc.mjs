@@ -1,9 +1,15 @@
 import net from 'node:net';
 import { EventEmitter } from 'node:events';
 import { randomUUID } from 'node:crypto';
+import os from 'node:os';
+import path from 'node:path';
+
+export function defaultDesktopPath(platform = process.platform, home = process.env.CODEX_HOME || path.join(os.homedir(), '.codex')) {
+  return platform === 'win32' ? '\\\\.\\pipe\\codex-ipc' : path.join(home, 'ipc', 'ipc.sock');
+}
 
 export class DesktopIPC extends EventEmitter {
-  constructor(pipePath = '\\\\.\\pipe\\codex-ipc') {
+  constructor(pipePath = defaultDesktopPath()) {
     super(); this.path = pipePath; this.pending = new Map(); this.buffer = Buffer.alloc(0); this.clientId = 'initializing-client';
   }
   async connect() {
@@ -13,7 +19,7 @@ export class DesktopIPC extends EventEmitter {
     this.socket.on('error', error => this.close(error));
     this.socket.on('close', () => this.close(new Error('Desktop disconnected')));
     await new Promise((resolve, reject) => {
-      const timer = setTimeout(() => { this.socket.destroy(); reject(new Error('Connection timeout')); }, 5_000);
+      const timer = setTimeout(() => { this.close(); reject(new Error('Desktop connection timeout')); }, 5_000);
       this.socket.once('connect', () => { clearTimeout(timer); resolve(); });
       this.socket.once('error', error => { clearTimeout(timer); reject(error); });
     });

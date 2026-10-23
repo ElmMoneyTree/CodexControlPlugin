@@ -1,9 +1,11 @@
 # CodexControlPlugin
 
 > [!IMPORTANT]
-> **这个 marketplace 当前仅支持 Windows 10/11 x64。** 插件内置 Windows `node.exe`，启动脚本使用 PowerShell，并通过 Windows 命名管道连接 Codex Desktop。macOS、Linux 和 ARM64 暂不支持。
+> **0.3.3 支持 Windows 10/11 x64，以及 macOS Apple Silicon / Intel。** Windows 内置 `node.exe`；macOS 使用 Node.js 24 及以上（优先复用 Codex 桌面签名运行时），通过 Unix socket 连接 Codex Desktop。Linux 与 Windows ARM64 尚未支持。
 
-这是 **CodexControlPlugin 的 Windows 插件安装仓库**。仓库中保存的是 Codex 可以直接安装的 marketplace 和已构建运行文件，不是 Codex Control 主项目的源码仓库。
+这是 **CodexControlPlugin 的 Windows / macOS 插件安装仓库**。仓库中保存的是 Codex 可以直接安装的 marketplace 和已构建运行文件，不是 Codex Control 主项目的源码仓库。
+
+0.3.3 增加手机新建聊天：选择 Codex / ChatGPT Work、对应项目或不指定项目，并发送首条消息。请同步更新手机 App 和 Relay；插件更新后重启桌面应用并打开一个已有聊天，以加载新增的 MCP 连接组件。后台服务通过设备凭据认证此组件，手机可继续查看创建结果、阅读消息和回复。
 
 插件安装地址固定为：
 
@@ -16,8 +18,8 @@ https://github.com/ElmMoneyTree/CodexControlPlugin.git
 ## 安装前准备
 
 - 安装 Codex Desktop 或 Codex CLI 0.153.4 及以上版本；
-- 确认目标电脑可以访问已经部署的 Relay；
-- 在连接同一个 Relay 的 Controller 中准备生成一次性配对码；
+- 确认目标电脑可以访问已经部署的统一连接服务；
+- iPhone App 已经使用 Codex Control 账号登录；
 - 如果使用私有 Git 仓库，先让目标电脑的 Git/GitHub 凭据获得读取权限。
 
 ## 用户安装
@@ -38,17 +40,33 @@ codex plugin add codex-control-plugin@codex-control
 
 1. 重启 Codex，或新建一个 Codex 任务。
 2. 在 `/hooks` 或 Codex Desktop 的 Hook 管理界面中找到 `CodexControlPlugin`，检查并信任 `SessionStart` Hook。
-3. 在 Controller 中点击“连接新设备”，生成新的十分钟一次性配对码。
-4. 在目标电脑的 Codex 任务中输入：
-
-   ```text
-   使用 CodexControlPlugin 连接这台设备。
-   Relay 是 https://relay.example.com，配对码是 <当前配对码>，设备名是 <设备名>。
-   ```
-
+3. 信任后新建一个 Codex 任务。插件会自动生成密钥设备身份并打开五分钟有效的认领页面，无需输入 Relay 地址、Owner ID 或配对码。
+4. 电脑认领页仅显示二维码。用已登录的 iPhone App 扫码，在手机上核对指纹、选择个人或团队空间并批准。
 5. 输入“查看 CodexControlPlugin 状态”。状态显示 `connected` 即完成。
 
-插件只替代目标电脑上的独立 Device Agent。Relay 和 Controller 仍需分别部署。更多配对、日志和卸载说明见 [插件配置说明](./PLUGIN-INSTALL.zh-CN.md)。
+If the claim page is closed before expiry, run the same claim command again. The plugin reopens the existing claim instead of creating a duplicate; its short-lived secret remains protected by Windows DPAPI or macOS Keychain and is removed after approval or expiry.
+
+Claim commands print only a safe fingerprint and expiry by default. The explicit `-RevealClaimLink` diagnostic option is for a private local operator terminal only and must not be invoked through Codex or copied into chat logs.
+
+已使用数字配对的旧设备不会被自动迁移。输入“使用 CodexControlPlugin 在 Codex Control 中认领这台设备”即可原位迁移：设备 ID 与任务状态保留，批准后轮换凭据，认领过期时旧连接不受影响。
+
+插件只替代目标电脑上的独立 Device Agent。Relay 和 Controller 仍需分别部署。更多认领、迁移、日志和卸载说明见 [插件配置说明](./PLUGIN-INSTALL.zh-CN.md)。
+
+For a credential-safe Windows verification with Codex Desktop open, run `scripts\verify-device-claim.ps1` for preflight and then add `-BeginClaim` to verify claim completion and the first live Agent sync.
+
+## macOS 使用
+
+macOS 的安装和手机扫码认领步骤与上文相同。凭据保存在当前用户的 Keychain 中，后台同步由用户级 LaunchAgent 管理。无需安装 Windows PowerShell。
+
+在插件目录内可以手动验证和启动：
+
+```bash
+bash scripts/macos-agent.sh verify
+bash scripts/macos-agent.sh claim
+bash scripts/macos-agent.sh status
+```
+
+`verify` 检查本机 Desktop IPC，`claim` 打开认领二维码；手机批准后 `status` 应显示 `connected` 和最近同步时间。详细启动、日志与卸载说明见 [插件配置说明](./PLUGIN-INSTALL.zh-CN.md)。
 
 ## 用户更新
 
@@ -81,7 +99,7 @@ codex-control-plugin
 codex-control-plugin@codex-control
 ```
 
-仓库根目录中的 `.agents/plugins/marketplace.json` 供 Codex 识别 marketplace，`plugins/codex-control-plugin/` 是可直接运行的 Windows 插件发行内容。
+仓库根目录中的 `.agents/plugins/marketplace.json` 供 Codex 识别 marketplace，`plugins/codex-control-plugin/` 是可直接运行的 Windows / macOS 插件发行内容。
 
 ## 许可证
 

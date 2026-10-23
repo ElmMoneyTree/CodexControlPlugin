@@ -18,14 +18,17 @@ export function parseDaemonArguments(argv) {
   return result;
 }
 
-export function daemonPipeName(dataDirectory) {
-  const suffix = crypto.createHash('sha256').update(path.resolve(dataDirectory).toLowerCase()).digest('hex').slice(0, 24);
-  return `\\\\.\\pipe\\codex-control-agent-${suffix}`;
+export function daemonPipeName(dataDirectory, platform = process.platform) {
+  const normalized = platform === 'win32' ? path.resolve(dataDirectory).toLowerCase() : path.resolve(dataDirectory);
+  const suffix = crypto.createHash('sha256').update(normalized).digest('hex').slice(0, 24);
+  return platform === 'win32' ? `\\\\.\\pipe\\codex-control-agent-${suffix}`
+    : path.join('/tmp', `codex-control-${process.getuid()}`, `${suffix}.sock`);
 }
 
 export function readAgentConfig(configPath) {
   const value = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-  for (const field of ['relayUrl', 'deviceId', 'encryptedDeviceToken', 'name']) {
+  const secretField = value.secretStorage === 'macos-keychain' ? 'credentialAccount' : 'encryptedDeviceToken';
+  for (const field of ['relayUrl', 'deviceId', secretField, 'name']) {
     if (typeof value[field] !== 'string' || !value[field]) throw new Error(`Agent config is missing ${field}`);
   }
   return value;

@@ -40,26 +40,41 @@ export class RolloutReader {
 
 export function parseRollout(lines) {
   const result = { latestMessage: null, latestTurnId: null, status: null, updatedAt: null };
+  const supersededTurns = new Set();
   for (const line of lines) {
     let record; try { record = JSON.parse(line); } catch { continue; }
     const timestamp = Date.parse(record.timestamp);
     if (Number.isFinite(timestamp)) result.updatedAt = timestamp;
-    if (record.type === 'event_msg') readEvent(record.payload, result);
+    if (record.type === 'event_msg') readEvent(record.payload, result, supersededTurns);
     if (record.type === 'response_item') readResponse(record.payload, result);
   }
   return result;
 }
 
-function readEvent(payload, result) {
+function readEvent(payload, result, supersededTurns) {
   if (!payload || typeof payload !== 'object') return;
-  if (payload.type === 'task_started' || payload.type === 'turn_started') result.status = 'running';
+  if (payload.type === 'task_started' || payload.type === 'turn_started') {
+    if (result.latestTurnId && result.latestTurnId !== payload.turn_id) supersededTurns.add(result.latestTurnId);
+    result.status = 'running';
+    result.latestTurnId = typeof payload.turn_id === 'string' && payload.turn_id ? payload.turn_id : null;
+  }
+  if (['task_complete', 'turn_aborted', 'task_failed'].includes(payload.type)) {
+    const turnId = typeof payload.turn_id === 'string' && payload.turn_id ? payload.turn_id : null;
+    // A late terminal event for an earlier turn must not end the current turn.
+    if (turnId && supersededTurns.has(turnId)) return;
+    if (turnId && result.latestTurnId && turnId !== result.latestTurnId) {
+      if (result.status === 'running') return;
+      supersededTurns.add(result.latestTurnId);
+    }
+    result.latestTurnId = turnId;
+    result.status = payload.type === 'turn_aborted' ? 'cancelled'
+      : payload.type === 'task_failed' || payload.error ? 'failed'
+      : turnId ? 'completed' : 'unknown';
+  }
   if (payload.type === 'task_complete') {
-    result.status = 'completed'; result.latestTurnId = payload.turn_id ?? result.latestTurnId;
     if (typeof payload.last_agent_message === 'string') result.latestMessage = payload.last_agent_message;
   }
-  if (payload.type === 'turn_aborted' || payload.type === 'task_failed') result.status = 'failed';
   if (payload.type === 'item_completed' && payload.item?.type === 'AgentMessage') {
-    result.latestTurnId = payload.turn_id ?? result.latestTurnId;
     const text = payload.item.content?.filter(item => item.type === 'Text').map(item => item.text).join('\n');
     if (text) result.latestMessage = text;
   }
@@ -69,7 +84,6 @@ function readResponse(payload, result) {
   if (payload?.type !== 'message' || payload.role !== 'assistant') return;
   const text = payload.content?.filter(item => item.type === 'output_text').map(item => item.text).join('\n');
   if (text) result.latestMessage = text;
-  result.latestTurnId = payload.internal_chat_message_metadata_passthrough?.turn_id ?? result.latestTurnId;
 }
 
 function uuidV7Timestamp(value) {

@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "codex_control_desktop": {
+      "command": "${PLUGIN_ROOT}/runtime/node",
+      "args": ["${PLUGIN_ROOT}/scripts/desktop-bridge.mjs"],
+      "cwd": "${PLUGIN_ROOT}",
+      "env_vars": [
+        "CODEX_APP_TOOLS_PIPE_PATH",
+        "CODEX_MCP_NODE_PATH",
+        "CODEX_ELECTRON_RESOURCES_PATH",
+        "CODEX_CLI_PATH",
+        "CODEX_HOME",
+        "CODEX_CONTROL_DATA_DIRECTORY",
+        "HOME",
+        "USERPROFILE",
+        "LOCALAPPDATA",
+        "SystemRoot",
+        "PATH"
+      ],
+      "startup_timeout_sec": 10,
+      "tool_timeout_sec": 45,
+      "required": false
+    }
+  }
+}

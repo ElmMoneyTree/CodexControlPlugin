@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 import net from 'node:net';
 import { randomUUID } from 'node:crypto';
+import path from 'node:path';
+import { DesktopBridgeClient } from './desktop-bridge.mjs';
 
 const PIPE_ROOT = '\\\\.\\pipe\\';
 const MAX_FRAME = 32 * 1024 * 1024;
@@ -21,19 +23,26 @@ export class FrameDecoder {
 }
 
 export class AppTools {
-  constructor(pipePath, { timeoutMs = 10_000 } = {}) {
+  constructor(pipePath, { timeoutMs = 30_000 } = {}) {
     this.pipePath = pipePath;
     this.timeoutMs = timeoutMs;
   }
 
-  static async discover(options) {
-    const names = fs.readdirSync(PIPE_ROOT).filter(name => /^codex-browser-use-[0-9a-f-]+$/i.test(name));
+  static async discover({ platform = process.platform, useBroker = true, ...options } = {}) {
+    if (useBroker) {
+      try { return await DesktopBridgeClient.discover({ platform, ...options }); }
+      catch { /* A trusted foreground CLI process can also call app tools directly. */ }
+    }
+    const candidates = appToolPipePaths(platform);
     const failures = [];
-    for (const name of names) {
-      const instance = new AppTools(`${PIPE_ROOT}${name}`, options);
+    for (const pipePath of candidates) {
+      const instance = new AppTools(pipePath, options);
       try {
         const tools = await instance.list();
-        if (tools.some(tool => tool.namespace === 'codex_app' && tool.name === 'send_message_to_thread')) return instance;
+        if (tools.some(tool => tool.namespace === 'codex_app' && tool.name === 'list_threads')) {
+          instance.tools = tools;
+          return instance;
+        }
       } catch (error) { failures.push(error.message); }
     }
     throw new Error(`Codex app tools pipe was not found${failures.length ? `: ${failures.at(-1)}` : ''}`);
@@ -46,7 +55,26 @@ export class AppTools {
   }
 
   async listThreads(context, limit = 50) {
-    return this.call('list_threads', { limit }, context);
+    return this.call('list_threads', { limit: Math.min(50, limit) }, context);
+  }
+
+  async listProjects(context) { return this.call('list_projects', {}, context); }
+
+  async createThread(backend, projectId, text, context) {
+    const target = backend === 'chatgpt' ? { type: 'chatgptWorkCloud', ...(projectId ? { projectId } : {}) }
+      : projectId ? { type: 'project', projectId, environment: { type: 'local' } } : { type: 'projectless' };
+    return this.call('create_thread', { prompt: text, target }, context);
+  }
+
+  async readThread(threadId, cursor, context) {
+    return this.call('read_thread', { threadId, ...(cursor ? { cursor } : {}), turnLimit: 5, includeOutputs: false, maxOutputCharsPerItem: 20_000 }, context);
+  }
+
+  creationBackends() {
+    const tool = this.tools?.find(tool => tool.namespace === 'codex_app' && tool.name === 'create_thread');
+    const targets = tool?.inputSchema?.properties?.target?.anyOf ?? [];
+    const types = targets.flatMap(target => target?.properties?.type?.enum ?? []);
+    return [...(types.includes('projectless') ? ['codex'] : []), ...(types.includes('chatgptWorkCloud') ? ['chatgpt'] : [])];
   }
 
   async sendMessage(threadId, prompt, context) {
@@ -57,11 +85,11 @@ export class AppTools {
     return this.call('wait_threads', { targets: [{ threadId }], timeoutMs: 0 }, context);
   }
 
-  async call(tool, args, { threadId, turnId }) {
-    if (!threadId || !turnId) throw new Error('A live Codex caller context is required');
+  async call(tool, args, { threadId, turnId, callerSource = 'codex', hostId = 'local' } = {}) {
+    if (!threadId || !turnId) throw new Error('Open an existing desktop chat before creating a chat from the phone');
     const response = await this.rpc({
       jsonrpc: '2.0', id: 1, method: 'tools/call',
-      params: { namespace: 'codex_app', tool, arguments: args, threadId, turnId, callId: randomUUID() },
+      params: { namespace: 'codex_app', tool, arguments: args, threadId, turnId, callerSource, hostId, callId: randomUUID() },
     });
     if (response.error) throw new Error(response.error.message ?? `${tool} failed`);
     if (response.result?.success === false) throw new Error(readToolError(response.result) ?? `${tool} failed`);
@@ -82,6 +110,7 @@ export class AppTools {
       const decoder = new FrameDecoder(message => finish(null, message));
       const timer = setTimeout(() => finish(new Error('App tools request timed out; outcome unknown')), this.timeoutMs);
       socket.on('error', error => finish(error));
+      socket.on('close', () => finish(new Error('Desktop app tools connection closed; use the app bundled Node.js runtime on macOS')));
       socket.on('data', chunk => { try { decoder.receive(chunk); } catch (error) { finish(error); } });
       socket.on('connect', () => {
         const body = Buffer.from(JSON.stringify(request));
@@ -90,6 +119,19 @@ export class AppTools {
       });
     });
   }
+
+}
+
+export function appToolPipePaths(platform = process.platform, env = process.env) {
+  const configured = env.CODEX_APP_TOOLS_PIPE_PATH;
+  let paths = [];
+  try {
+    if (platform === 'win32') paths = fs.readdirSync(PIPE_ROOT).filter(name => /^codex-browser-use-[0-9a-f-]+$/i.test(name)).map(name => `${PIPE_ROOT}${name}`);
+    else paths = fs.readdirSync('/tmp/codex-browser-use').filter(name => /^[0-9a-f-]+\.sock$/i.test(name)).map(name => path.join('/tmp/codex-browser-use', name))
+      .map(file => ({ file, stat: fs.statSync(file) })).filter(({ stat }) => stat.isSocket() && stat.uid === process.getuid?.() && (stat.mode & 0o077) === 0)
+      .sort((a, b) => b.stat.mtimeMs - a.stat.mtimeMs).map(({ file }) => file);
+  } catch { /* The desktop may be closed or still starting. */ }
+  return [...new Set([...(configured ? [configured] : []), ...paths])];
 }
 
 function readToolValue(result) {

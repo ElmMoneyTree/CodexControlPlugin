@@ -1,0 +1,19 @@
+#!/bin/sh
+set -eu
+
+# Windows resolves the same extensionless MCP command to bundled node.exe.
+# On macOS, exec the desktop runtime so the worker remains an app descendant.
+for candidate in \
+  "${CODEX_ELECTRON_RESOURCES_PATH:-}/cua_node/bin/node" \
+  "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node" \
+  "/Applications/Codex.app/Contents/Resources/cua_node/bin/node" \
+  "${HOME:-}/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node" \
+  "${HOME:-}/Applications/Codex.app/Contents/Resources/cua_node/bin/node" \
+  "${CODEX_MCP_NODE_PATH:-}"
+do
+  if [ -n "$candidate" ] && [ -x "$candidate" ] && "$candidate" -e 'process.exit(Number(process.versions.node.split(".")[0]) >= 24 ? 0 : 1)' >/dev/null 2>&1; then
+    exec "$candidate" "$@"
+  fi
+done
+printf '%s\n' 'Codex Control requires the desktop Node.js runtime. Update the desktop app and restart the plugin.' >&2
+exit 127

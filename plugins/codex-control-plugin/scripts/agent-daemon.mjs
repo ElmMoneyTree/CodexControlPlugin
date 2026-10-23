@@ -1,8 +1,9 @@
 import fs from 'node:fs';
 import net from 'node:net';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
 import { CodexDeviceAgent } from '../runtime/agent-core/index.mjs';
+import { ensurePrivateDirectory } from './macos-storage.mjs';
+import { readDeviceToken } from './device-credential.mjs';
 import {
   appendLog,
   daemonPipeName,
@@ -13,7 +14,7 @@ import {
   writeStatus,
 } from './daemon-lib.mjs';
 
-const VERSION = '0.1.3';
+const VERSION = '0.3.3';
 const CYCLE_INTERVAL_MS = positiveNumber(process.env.CODEX_CONTROL_AGENT_INTERVAL_MS, 3_000);
 const DESKTOP_GRACE_MS = positiveNumber(process.env.CODEX_CONTROL_AGENT_DESKTOP_GRACE_MS, 90_000);
 const options = parseDaemonArguments(process.argv.slice(2));
@@ -56,8 +57,16 @@ const lockServer = net.createServer(socket => {
   });
 });
 
+if (process.platform !== 'win32') ensurePrivateDirectory(path.dirname(pipeName));
+if (process.platform !== 'win32' && fs.existsSync(pipeName)) {
+  if (await pipeAcceptsConnections(pipeName)) process.exit(0);
+  const stat = fs.lstatSync(pipeName);
+  if (!stat.isSocket() || stat.uid !== process.getuid()) throw new Error('Unsafe Agent socket path');
+  fs.unlinkSync(pipeName);
+}
 const lockState = await listen(lockServer, pipeName);
 if (lockState === 'already-running') process.exit(0);
+if (process.platform !== 'win32') fs.chmodSync(pipeName, 0o600);
 
 const baseStatus = { source: 'codex-plugin', version: VERSION, pid: process.pid };
 if (!fs.existsSync(configPath)) {
@@ -68,7 +77,7 @@ if (!fs.existsSync(configPath)) {
 
 try {
   const stored = readAgentConfig(configPath);
-  const deviceToken = decryptToken(configPath);
+  const deviceToken = readDeviceToken(configPath);
   const publicConfig = publicAgentConfig(stored);
   agent = new CodexDeviceAgent({ ...publicConfig, deviceToken, configPath });
   appendLog(logPath, `Agent ${VERSION} started for ${publicConfig.deviceId}`);
@@ -191,19 +200,6 @@ function pipeAcceptsConnections(pipe) {
     socket.once('error', () => finish(false));
     setTimeout(() => finish(false), 500);
   });
-}
-
-function decryptToken(file) {
-  if (process.env.CODEX_CONTROL_AGENT_TEST_TOKEN) return process.env.CODEX_CONTROL_AGENT_TEST_TOKEN;
-  const powershell = path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe');
-  const script = path.join(import.meta.dirname, 'decrypt-token.ps1');
-  const result = spawnSync(powershell, ['-NoLogo', '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', script, '-ConfigPath', file], {
-    encoding: 'utf8',
-    windowsHide: true,
-    timeout: 10_000,
-  });
-  if (result.status !== 0 || !result.stdout) throw new Error(result.stderr?.trim() || 'Unable to decrypt the device token.');
-  return result.stdout;
 }
 
 function readJson(file) {
