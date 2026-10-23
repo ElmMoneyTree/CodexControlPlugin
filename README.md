@@ -15,10 +15,12 @@ https://github.com/ElmMoneyTree/CodexControlPlugin.git
 
 ## 安装前准备
 
-- 安装 Codex Desktop 或 Codex CLI 0.153.4 及以上版本；
-- 确认目标电脑可以访问已经部署的 Relay；
-- 在连接同一个 Relay 的 Controller 中准备生成一次性配对码；
-- 如果使用私有 Git 仓库，先让目标电脑的 Git/GitHub 凭据获得读取权限。
+- 使用 Windows 10/11 x64，并安装、登录和打开 Codex Desktop；本插件通过 Desktop 的本机接口操作任务。
+- 安装 Git，并确保 PowerShell 中可以运行 `git --version` 和 `codex --version`。安装命令已在 Codex CLI 0.153.4 验证；CLI 需要支持 `plugin marketplace` 和 `plugin add`。
+- 确认电脑可以访问 GitHub 和连接服务 `https://codex-relay.kuajingvs.com`。
+- 在 iPhone App 或浏览器中登录自己的 Codex Control 账号，准备认领设备。
+
+这是公开安装仓库，下载安装无需 GitHub 账号或令牌。插件内置 Windows Node.js，无需另外安装 Node.js，也不需要在目标电脑构建源码。
 
 ## 用户安装
 
@@ -38,17 +40,18 @@ codex plugin add codex-control-plugin@codex-control
 
 1. 重启 Codex，或新建一个 Codex 任务。
 2. 在 `/hooks` 或 Codex Desktop 的 Hook 管理界面中找到 `CodexControlPlugin`，检查并信任 `SessionStart` Hook。
-3. 在 Controller 中点击“连接新设备”，生成新的十分钟一次性配对码。
-4. 在目标电脑的 Codex 任务中输入：
+3. 信任后再新建一个 Codex 任务。插件会自动打开五分钟有效的设备认领页面；如果没有打开，在任务中输入：
 
    ```text
-   使用 CodexControlPlugin 连接这台设备。
-   Relay 是 https://relay.example.com，配对码是 <当前配对码>，设备名是 <设备名>。
+   使用 CodexControlPlugin 在 Codex Control 中认领这台设备。
    ```
 
+4. 用已登录的 iPhone App 扫描页面二维码，或直接在页面登录。核对设备指纹，选择个人或团队空间并批准。
 5. 输入“查看 CodexControlPlugin 状态”。状态显示 `connected` 即完成。
 
-插件只替代目标电脑上的独立 Device Agent。Relay 和 Controller 仍需分别部署。更多配对、日志和卸载说明见 [插件配置说明](./PLUGIN-INSTALL.zh-CN.md)。
+每台新电脑都使用同一个 GitHub 地址安装，再由使用者独立认领。设备归属取决于批准认领的账号和所选空间；安装仓库中不包含你的个人设备凭据。正常流程不需要手动输入 Relay 地址、Owner ID 或配对码。
+
+插件只替代目标电脑上的独立 Device Agent。Relay 和 Controller 仍需分别部署。更多认领、迁移、日志和卸载说明见 [插件配置说明](./PLUGIN-INSTALL.zh-CN.md)。GitHub marketplace 的分发方式见 [OpenAI 官方说明](https://developers.openai.com/plugins/build/plugins)。
 
 ## 用户更新
 

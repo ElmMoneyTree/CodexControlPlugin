@@ -5,9 +5,12 @@
 ## 系统要求
 
 - Windows 10/11 x64
-- Codex Desktop 或 Codex CLI 0.153.4 及以上；当前版本已在 0.153.4 验证
-- 目标电脑能够访问 Relay
-- Controller 已经连接同一个 Relay
+- 已安装、登录并打开 Codex Desktop；仅安装 CLI 无法连接 Desktop 任务
+- 已安装 Git，且 PowerShell 中可以运行 `git --version` 和 `codex --version`；安装命令已在 Codex CLI 0.153.4 验证
+- 目标电脑能够访问 GitHub 和默认连接服务 `https://codex-relay.kuajingvs.com`
+- iPhone App 或浏览器已经使用自己的 Codex Control 账号登录
+
+安装仓库公开可读，无需 GitHub 账号。插件已经内置 Windows Node.js，目标电脑无需安装 Node.js 或编译源码。
 
 ## 安装
 
@@ -30,23 +33,34 @@ codex plugin add codex-control-plugin@codex-control
 3. 重启 Codex，或至少新建一个 Codex 任务。
 4. 首次加载时在 Codex CLI 执行 `/hooks`，或在 Codex Desktop 打开 Hook 管理界面。检查 `CodexControlPlugin` 的 `SessionStart` Hook，然后选择信任。Codex 会把信任绑定到 Hook 内容哈希；插件升级后内容变化时需要重新检查。
 
-## 配对
+## 认领设备
 
-1. 退出旧的独立 `Codex Device Agent`，防止 Controller 同时出现两个相同设备。
-2. 在 Controller 中点击“连接新设备”，取得新的十分钟一次性配对码。
-3. 在目标电脑新建 Codex 任务并输入：
+1. 如果旧的独立 `Codex Device Agent` 正在运行，先退出它，防止 App 同时出现两个相同设备。
+2. 信任 Hook 后再新建一个 Codex 任务。插件会自动生成设备身份并打开五分钟有效的认领页面；如果没有打开，在任务中输入：
 
    ```text
-   使用 CodexControlPlugin 连接这台设备。
-   Relay 是 http://192.168.18.34:8787，配对码是 <当前配对码>，设备名是 <设备名>。
+   使用 CodexControlPlugin 在 Codex Control 中认领这台设备。
    ```
 
-4. Codex 会调用插件自带配置脚本。设备令牌使用 Windows DPAPI 按当前用户加密，不会写入聊天。
-5. 继续输入“查看 CodexControlPlugin 状态”。状态为 `connected`，并显示最近同步时间和任务数量时，配对完成。
+3. 用已登录的 iPhone App 扫描页面二维码，或直接在页面登录。核对设备指纹，选择个人或团队空间并批准。
+4. 继续输入“查看 CodexControlPlugin 状态”。状态为 `connected`，并显示最近同步时间和任务数量时，认领完成。
+
+每台电脑分别生成设备身份、分别认领。设备令牌和私钥使用 Windows DPAPI 按当前用户加密；不要把一台电脑的数据目录复制给另一台电脑。安装仓库不携带个人账号凭据，正常流程不需要输入 Relay 地址、Owner ID 或配对码。
+
+认领页面在有效期内被关闭时，再运行同一个认领指令可恢复页面。已通过旧配对码连接的设备也可使用这个指令原位迁移；批准成功后才轮换凭据。旧配对码流程仅作为兼容备用方式保留。
+
+## 更新
+
+```powershell
+codex plugin marketplace upgrade codex-control
+codex plugin add codex-control-plugin@codex-control
+```
+
+更新后重启 Codex 并新建任务。Hook 内容变化时需要重新检查并信任；已有设备配置保存在插件目录之外。
 
 ## 自动启动和退出
 
-- 每次 Codex 会话启动或恢复，`SessionStart` Hook 会运行一个短启动器。
+- 第一次可信的 Codex 会话启动时，`SessionStart` Hook 会打开设备认领页面；认领完成后的会话启动或恢复会运行 Agent 启动器。
 - 启动器检测单实例锁；Agent 已运行时立即退出，不会重复启动。
 - Agent 在后台轮询 Relay，并连接本机 Codex IPC。
 - Codex Desktop 持续不可用 90 秒后，插件 Agent 自动退出。
@@ -62,19 +76,26 @@ codex plugin add codex-control-plugin@codex-control
 
 其中：
 
-- `agent-config.json`：DPAPI 加密后的配对信息
+- `agent-config.json`：DPAPI 加密后的设备凭据和空间信息
+- `pending-claim.json`：短期认领期间的 DPAPI 加密密钥和轮询凭据，批准或过期后删除
 - `status.json`：连接状态和最近同步信息，不含明文令牌
 - `agent.log`：后台 Agent 日志，不含明文令牌
 
 ## 断开或卸载
 
-可以在 Codex 中输入“断开这台设备的 CodexControlPlugin”，也可以在原解压目录运行：
+如果希望服务器凭据立即失效，先在 iPhone App 中撤销该设备。然后在 Codex 中输入“断开这台设备的 CodexControlPlugin”，并卸载插件：
+
+```powershell
+codex plugin remove codex-control-plugin@codex-control
+```
+
+使用 ZIP 安装的用户也可以在原解压目录运行：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\uninstall-plugin.ps1
 ```
 
-卸载脚本会停止插件 Agent、删除本机配对配置、卸载插件并移除本地市场配置。Relay 中已有的设备记录目前仍会保留并显示离线。
+卸载脚本会停止插件 Agent、删除本机配置、卸载插件并移除市场配置。仅删除本机配置不等于在服务器撤销凭据。
 
 ## 与独立 Agent 的关系
 
