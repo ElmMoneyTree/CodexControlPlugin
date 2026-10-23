@@ -24,3 +24,9 @@ evidence/
 # Local Agent state must never be committed
 agent-config.json
 status.json
+
+dist/
+
+.env
+
+.env.*

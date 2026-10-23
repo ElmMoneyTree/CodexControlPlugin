@@ -2,9 +2,9 @@
   "name": "codex-control-plugin",
   "version": "0.3.3",
   "baseVersion": "0.3.3",
-  "builtAt": "2026-10-23T08:01:40.616Z",
-  "sourceCommit": "f79e315da796243bee255f847b35102294ce3513",
-  "sourceTreeState": "working-tree",
+  "builtAt": "2026-10-23T08:15:42.461Z",
+  "sourceCommit": "5b2181308759872beb7980c6f235b10e123e9507",
+  "sourceTreeState": "clean",
   "archiveFile": "codex-control-plugin-0.3.3.zip",
   "platforms": [
     "win32-x64",
@@ -45,8 +45,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 11195,
-      "sha256": "8e29fd6826b44d8d523db712c977396d97ad5c38ce8f95296c5f559e48574202"
+      "bytes": 11774,
+      "sha256": "b0cd228396081ec5369ff6bf4a1b1acd875af1ecc595f1c5ce99b912a310dce6"
     },
     {
       "path": "runtime/agent-core/index.mjs",
@@ -75,13 +75,18 @@
     },
     {
       "path": "runtime/agent-core/src/conversation.mjs",
-      "bytes": 3951,
-      "sha256": "827097fc66491f2b313615602211c0035cabf01d989ab4d3dc97fdaa1a6c0775"
+      "bytes": 9321,
+      "sha256": "ad705857313aec8b20110e35a67b668536222b2bd14cd507127f07f0532a6e67"
     },
     {
       "path": "runtime/agent-core/src/desktop-bridge.mjs",
       "bytes": 11622,
       "sha256": "587c36e19c32b0c74cad7122dd0c9f89e57fc7b184de2622014cd10f36316525"
+    },
+    {
+      "path": "runtime/agent-core/src/image-attachments.mjs",
+      "bytes": 12500,
+      "sha256": "93edac51c046b5d1c653a59b45b1811ba8041a4d637ec8609e4af85420519882"
     },
     {
       "path": "runtime/agent-core/src/journal.mjs",
@@ -240,8 +245,8 @@
     },
     {
       "path": "scripts/start-device-claim.ps1",
-      "bytes": 6557,
-      "sha256": "4bef67b0a33e56564886ebba5f261e0e119fb2c24ea968304bcf191b2b7e10db"
+      "bytes": 6655,
+      "sha256": "fb8c357b09ce0ee32d9fe94d6df428a2ecbda785039bc3930c52393fcea0178a"
     },
     {
       "path": "scripts/verify-device-claim.ps1",
@@ -251,7 +256,7 @@
     {
       "path": "scripts/watch-device-claim.ps1",
       "bytes": 5336,
-      "sha256": "26b701bfb4094b075903e943b4c82d911792a9d538a6576e673e1ac771b8d08e"
+      "sha256": "a2a8ca5c5058c3931374acbbd27fe6a842df887bb2032ad7865cf4edac85806b"
     },
     {
       "path": "skills/codex-control-plugin/SKILL.md",

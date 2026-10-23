@@ -23,6 +23,7 @@ CodexControlPlugin starts a device agent when a Codex session starts or resumes.
 - view device and task state;
 - receive completed task results;
 - forward requested user and assistant text messages from visible local conversations to a phone for local storage;
+- forward uploaded, generated, and local Markdown images from visible Codex messages in bounded chunks, with SHA-256 verification and a 25 MiB per-image limit;
 - reply to tasks;
 - answer structured user-input requests;
 - review and submit supported approval decisions.
@@ -45,6 +46,8 @@ The command output is credential-safe by default and contains only the device fi
 If a schema 1 legacy pairing configuration already exists, the same claim command performs an in-place migration. It authenticates with the existing device credential, preserves the device ID and task state, rotates the credential after approval, and leaves the old connection unchanged if the claim expires. `configure-agent.ps1` remains available only as a compatibility fallback.
 
 Relay and Controller are separate components. This repository contains only the Codex plugin layer.
+
+Image downloads resolve opaque attachment IDs against visible message events; the Controller never supplies a filesystem path. Generated results use their original embedded bytes when available. Relay forwards chunks in memory, while the iPhone owns downloaded files and deletion. Remote-only images and missing or unsupported files produce an unavailable placeholder. ChatGPT Work cloud images are not yet supported.
 
 ## Platform
 

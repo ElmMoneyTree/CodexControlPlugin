@@ -17,10 +17,12 @@ https://github.com/ElmMoneyTree/CodexControlPlugin.git
 
 ## 安装前准备
 
-- 安装 Codex Desktop 或 Codex CLI 0.153.4 及以上版本；
+- 安装、登录并打开 Codex Desktop；安装命令需要支持插件的 Codex CLI（已在 0.153.4 验证），仅有 CLI 不能连接 Desktop 任务；
 - 确认目标电脑可以访问已经部署的统一连接服务；
 - iPhone App 已经使用 Codex Control 账号登录；
 - 如果使用私有 Git 仓库，先让目标电脑的 Git/GitHub 凭据获得读取权限。
+
+这是公开安装仓库，下载安装无需 GitHub 账号或令牌。Windows 已内置 Node.js，macOS 可复用桌面应用签名运行时。
 
 ## 用户安装
 

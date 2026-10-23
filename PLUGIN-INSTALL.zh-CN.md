@@ -8,9 +8,11 @@
 
 - Windows 10/11 x64，或 macOS Apple Silicon / Intel
 - macOS 需 Node.js 24 及以上；启动器可复用 Codex 内置运行时，也支持本机 Node.js
-- Codex Desktop 或 Codex CLI 0.153.4 及以上；当前版本已在 0.153.4 验证
+- 安装、登录并打开 Codex Desktop；安装命令需要支持插件的 Codex CLI（已在 0.153.4 验证），仅有 CLI 不能连接 Desktop 任务
 - 目标电脑能够访问统一连接服务
 - iPhone App 已经使用 Codex Control 账号登录
+
+这是公开安装仓库，下载安装无需 GitHub 账号或令牌。Windows 已内置 Node.js。
 
 ## 安装
 
@@ -65,6 +67,15 @@ macOS 数据目录是 `~/Library/Application Support/Codex Control Agent Plugin`
 macOS 卸载前执行 `bash scripts/macos-agent.sh disconnect`，清理 LaunchAgent 与本机 Keychain 凭据，再执行 `codex plugin remove codex-control-plugin@codex-control`。如需同时撤销服务器凭据，请在手机设备页撤销设备。
 
 以下数据目录、PowerShell 命令与 DPAPI 说明适用于 Windows。
+
+## 更新
+
+```powershell
+codex plugin marketplace upgrade codex-control
+codex plugin add codex-control-plugin@codex-control
+```
+
+更新后重启 Codex 并打开已有聊天。Hook 内容变化时需要重新检查并信任；设备配置保存在插件目录之外。
 
 ## 自动启动和退出
 
