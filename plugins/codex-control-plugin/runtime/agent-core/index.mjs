@@ -7,8 +7,9 @@ import { RolloutReader } from './src/rollouts.mjs';
 import { buildAgentState, readSessionIndex } from './src/state.mjs';
 
 export class CodexDeviceAgent {
-  constructor(config, { taskLimit = 50, activeSnapshotLimit = 12 } = {}) {
+  constructor(config, { taskLimit = 50, activeSnapshotLimit = 12, platform = process.platform } = {}) {
     this.config = config;
+    this.platform = platform;
     this.taskLimit = taskLimit;
     this.activeSnapshotLimit = activeSnapshotLimit;
     this.relay = new RelayClient({ relayUrl: config.relayUrl, token: config.deviceToken });
@@ -24,14 +25,20 @@ export class CodexDeviceAgent {
     try { this.ipc?.close(); } catch { /* Best-effort cleanup before reconnecting. */ }
     this.ipc = await new DesktopIPC().connect();
     this.tasks = new DesktopTasks(this.ipc);
-    this.appTools = await AppTools.discover();
+    // macOS exposes task state directly through IPC; its browser bridge may not
+    // expose the legacy tool catalog used by older Windows builds.
+    this.appTools = null;
+    if (this.platform !== 'darwin') {
+      try { this.appTools = await AppTools.discover(); }
+      catch { /* The optional app tools bridge must not block IPC state sync. */ }
+    }
   }
 
   async collectState() {
     await this.connectDesktop();
     const index = readSessionIndex(undefined, this.taskLimit);
     let caller = null;
-    for (const entry of index.slice(0, 5)) {
+    for (const entry of (this.appTools ? index.slice(0, 5) : [])) {
       try {
         const candidate = await this.refreshCallerContext(entry.id, entry);
         if (candidate) { caller = candidate; break; }
@@ -39,8 +46,12 @@ export class CodexDeviceAgent {
     }
 
     let listed = index.map(entry => ({ ...entry, status: 'notLoaded' }));
-    if (caller) {
-      const value = await this.appTools.listThreads(caller, this.taskLimit);
+    let value = null;
+    if (caller && this.appTools) {
+      try { value = await this.appTools.listThreads(caller, this.taskLimit); }
+      catch { this.appTools = null; }
+    }
+    if (value) {
       const visible = [...(value.pinnedThreads ?? []), ...(value.threads ?? [])].filter(item => item.kind === 'codex');
       const byId = new Map(visible.map(item => [item.id, item]));
       for (const entry of index) if (!byId.has(entry.id)) byId.set(entry.id, { ...entry, status: 'notLoaded' });
@@ -56,6 +67,24 @@ export class CodexDeviceAgent {
       });
       const activeIds = new Set(active.map(item => item.id));
       for (const id of this.snapshots.keys()) if (!activeIds.has(id)) this.snapshots.delete(id);
+    } else {
+      // Refresh loaded tasks through IPC when the app tools bridge is unavailable. Rotate older entries so a long-
+      // running task remains visible even if its title/index timestamp is old.
+      const knownActive = index.filter(item => this.snapshots.get(item.id)?.threadRuntimeStatus?.type === 'active');
+      const offset = this.snapshotOffset ?? 0;
+      const rotated = [...index.slice(offset), ...index.slice(0, offset)];
+      const candidates = [...new Map([...knownActive, ...rotated].map(item => [item.id, item])).values()].slice(0, this.activeSnapshotLimit);
+      this.snapshotOffset = index.length ? (offset + this.activeSnapshotLimit) % index.length : 0;
+      await Promise.allSettled(candidates.map(async item => {
+        try { this.snapshots.set(item.id, await this.tasks.snapshot(item.id)); }
+        catch { this.snapshots.delete(item.id); }
+      }));
+      listed = index.map(item => {
+        const rollout = this.rollouts.read(item.id);
+        const snapshot = this.snapshots.get(item.id);
+        return { ...item, status: snapshot ? 'idle' : rollout?.status ?? 'notLoaded',
+          latestMessage: rollout?.latestMessage ?? null, updatedAt: rollout?.updatedAt ?? item.updatedAt };
+      });
     }
 
     const currentIds = new Set(listed.map(item => item.id ?? item.threadId));

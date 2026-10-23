@@ -8,7 +8,7 @@
 - 已安装、登录并打开 Codex Desktop；仅安装 CLI 无法连接 Desktop 任务
 - 已安装 Git，且 PowerShell 中可以运行 `git --version` 和 `codex --version`；安装命令已在 Codex CLI 0.153.4 验证
 - 目标电脑能够访问 GitHub 和默认连接服务 `https://codex-relay.kuajingvs.com`
-- iPhone App 或浏览器已经使用自己的 Codex Control 账号登录
+- iPhone App已经使用自己的 Codex Control 账号登录
 
 安装仓库公开可读，无需 GitHub 账号。插件已经内置 Windows Node.js，目标电脑无需安装 Node.js 或编译源码。
 
@@ -100,3 +100,12 @@ powershell -ExecutionPolicy Bypass -File .\uninstall-plugin.ps1
 ## 与独立 Agent 的关系
 
 插件和独立安装包复用同一份 `packages/agent-core`。独立安装包保留用于不支持插件或禁用了 Hook 的环境；正常使用时同一台电脑只运行其中一种。
+
+## 更新到 0.2.2
+
+```powershell
+codex plugin marketplace upgrade codex-control
+codex plugin add codex-control-plugin@codex-control
+```
+
+本版修复 Windows 认领后 Agent 的启动路径、桌面工具桥不可用时的同步，以及首次使用缺少任务索引时的同步。保留原设备身份，无需重新认领。若设备已认领但仍未 connected，在新版插件目录执行 `scripts/restart-agent.ps1`，保持 Codex Desktop 打开，再通过 `scripts/get-agent-status.ps1` 检查连接状态。认领页的成功提示和自动关闭还需要服务端 Relay 0.2.2。

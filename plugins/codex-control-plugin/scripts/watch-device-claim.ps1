@@ -55,18 +55,29 @@ try {
         Set-CurrentUserOnlyAcl -Path $configPath
         Remove-Item -LiteralPath $pendingPath -Force
         Write-Utf8JsonAtomically -Path $statusPath -Value ([ordered]@{
-          source = 'codex-plugin'; version = '0.2.0'; state = 'claimed'; relayUrl = $targetRelay
+          source = 'codex-plugin'; version = '0.2.2'; state = 'claimed'; relayUrl = $targetRelay
           workspaceId = [string]$claim.workspaceId; deviceId = [string]$claim.deviceId; name = [string]$pending.name
           deviceKeyFingerprint = [string]$pending.deviceKeyFingerprint; updatedAt = [DateTimeOffset]::UtcNow.ToString('o')
           migratedFromLegacy = [bool]$isMigration
         })
-        & (Join-Path $PSScriptRoot '..\hooks\session-start.ps1') -DataDirectory $data
+        # The SessionStart hook consumes stdin; a background watcher must launch directly.
+        try {
+          Start-DeviceAgent -DataDirectory $data
+        } catch {
+          Write-Utf8JsonAtomically -Path $statusPath -Value ([ordered]@{
+            source = 'codex-plugin'; version = '0.2.2'; state = 'error'
+            deviceId = [string]$claim.deviceId; name = [string]$pending.name
+            detail = "Device claimed, but Agent startup failed: $($_.Exception.Message)"
+            updatedAt = [DateTimeOffset]::UtcNow.ToString('o')
+          })
+          exit 1
+        }
         exit 0
       }
       if ($claim.status -in @('expired', 'rejected')) { break }
     } catch {
       Write-Utf8JsonAtomically -Path $statusPath -Value ([ordered]@{
-        source = 'codex-plugin'; version = '0.2.0'; state = 'claim-waiting'; claimId = [string]$pending.claimId
+        source = 'codex-plugin'; version = '0.2.2'; state = 'claim-waiting'; claimId = [string]$pending.claimId
         deviceKeyFingerprint = [string]$pending.deviceKeyFingerprint; detail = $_.Exception.Message
         expiresAt = [Int64]$pending.expiresAt; name = [string]$pending.name; updatedAt = [DateTimeOffset]::UtcNow.ToString('o')
       })
@@ -76,12 +87,12 @@ try {
 
   if (Test-Path -LiteralPath $pendingPath -PathType Leaf) { Remove-Item -LiteralPath $pendingPath -Force }
   Write-Utf8JsonAtomically -Path $statusPath -Value ([ordered]@{
-    source = 'codex-plugin'; version = '0.2.0'; state = 'claim-expired'; name = [string]$pending.name
+    source = 'codex-plugin'; version = '0.2.2'; state = 'claim-expired'; name = [string]$pending.name
     deviceKeyFingerprint = [string]$pending.deviceKeyFingerprint; updatedAt = [DateTimeOffset]::UtcNow.ToString('o')
   })
 } catch {
   Write-Utf8JsonAtomically -Path $statusPath -Value ([ordered]@{
-    source = 'codex-plugin'; version = '0.2.0'; state = 'claim-error'; detail = $_.Exception.Message
+    source = 'codex-plugin'; version = '0.2.2'; state = 'claim-error'; detail = $_.Exception.Message
     updatedAt = [DateTimeOffset]::UtcNow.ToString('o')
   })
   exit 1

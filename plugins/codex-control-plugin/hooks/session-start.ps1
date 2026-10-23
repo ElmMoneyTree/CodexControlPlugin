@@ -36,9 +36,9 @@ if (-not (Test-Path -LiteralPath $configPath -PathType Leaf)) {
     Start-ClaimWatcher -DataDirectory $data
     try {
       $pending = Get-Content -LiteralPath $pendingPath -Raw | ConvertFrom-Json
-      Write-SessionContext -Message "Codex Control is waiting for this device claim to be approved. The device fingerprint is $($pending.deviceKeyFingerprint), and the claim expires at Unix milliseconds $($pending.expiresAt). Ask the user to finish the already-open browser or mobile claim; never reveal local claim files or credentials."
+      Write-SessionContext -Message "Codex Control is waiting for this device claim to be approved. The device fingerprint is $($pending.deviceKeyFingerprint), and the claim expires at Unix milliseconds $($pending.expiresAt). Ask the user to scan the QR code on the already-open page and finish the claim in the signed-in mobile app; never reveal local claim files or credentials."
     } catch {
-      Write-SessionContext -Message 'Codex Control has a pending device claim. Ask the user to finish the already-open browser or mobile claim, or run the CodexControlPlugin claim flow again after it expires.'
+      Write-SessionContext -Message 'Codex Control has a pending device claim. Ask the user to scan the QR code on the already-open page and finish the claim in the signed-in mobile app, or run the CodexControlPlugin claim flow again after it expires.'
     }
     exit 0
   }
@@ -47,11 +47,10 @@ if (-not (Test-Path -LiteralPath $configPath -PathType Leaf)) {
     if (-not (Test-Path -LiteralPath $startClaim -PathType Leaf)) { throw 'scripts\start-device-claim.ps1 is missing.' }
     $claimOutput = & $startClaim -DataDirectory $data
     $claim = $claimOutput | ConvertFrom-Json
-    Write-SessionContext -Message "Codex Control created a short-lived claim for this device and opened the claim page. Ask the user to scan its QR code with the signed-in mobile app or sign in in the browser, compare fingerprint $($claim.deviceKeyFingerprint), choose a personal or team workspace, and confirm. Never reveal device credentials, the private key, poll token, or local claim files."
+    Write-SessionContext -Message "Codex Control created a short-lived claim for this device and opened the claim page. Ask the user to scan its QR code with the signed-in mobile app, compare fingerprint $($claim.deviceKeyFingerprint), choose a personal or team workspace, and confirm. Never reveal device credentials, the private key, poll token, or local claim files."
   } catch {
     Write-SessionContext -Message "Codex Control could not start automatic device claiming: $($_.Exception.Message) Ask the user to check the Relay and run the CodexControlPlugin claim flow again."
   }
   exit 0
 }
-$arguments = @("`"$daemon`"", '--data', "`"$data`"")
-Start-Process -FilePath $node -ArgumentList $arguments -WorkingDirectory $pluginRoot -WindowStyle Hidden | Out-Null
+Start-DeviceAgent -DataDirectory $data

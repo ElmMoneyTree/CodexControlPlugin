@@ -121,7 +121,7 @@ Set-CurrentUserOnlyAcl -Path $pendingPath
 $statusPath = Join-Path $data 'status.json'
 Write-Utf8JsonAtomically -Path $statusPath -Value ([ordered]@{
   source = 'codex-plugin'
-  version = '0.2.0'
+  version = '0.2.2'
   state = 'claim-pending'
   claimId = [string]$claim.id
   deviceKeyFingerprint = [string]$claim.deviceKeyFingerprint

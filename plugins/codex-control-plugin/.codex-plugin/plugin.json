@@ -1,6 +1,6 @@
 {
   "name": "codex-control-plugin",
-  "version": "0.2.0+codex.local-20260918-064813",
+  "version": "0.2.2",
   "description": "Connects this Windows Codex device through secure account-based device claiming.",
   "homepage": "https://github.com/ElmMoneyTree/CodexControlPlugin",
   "repository": "https://github.com/ElmMoneyTree/CodexControlPluginCode",

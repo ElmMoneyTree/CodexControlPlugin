@@ -76,6 +76,17 @@ function Get-ClaimWatcherMutexName {
   }
 }
 
+function Start-DeviceAgent {
+  param([Parameter(Mandatory = $true)][string]$DataDirectory)
+  $pluginRoot = Get-PluginRoot
+  $node = Join-Path $pluginRoot 'runtime\node.exe'
+  $daemon = Join-Path $pluginRoot 'scripts\agent-daemon.mjs'
+  if (-not (Test-Path -LiteralPath $node -PathType Leaf)) { throw 'The plugin runtime is incomplete: runtime\node.exe is missing.' }
+  if (-not (Test-Path -LiteralPath $daemon -PathType Leaf)) { throw 'The plugin runtime is incomplete: scripts\agent-daemon.mjs is missing.' }
+  $arguments = @("`"$daemon`"", '--data', "`"$DataDirectory`"")
+  Start-Process -FilePath $node -ArgumentList $arguments -WorkingDirectory $pluginRoot -WindowStyle Hidden | Out-Null
+}
+
 function Start-ClaimWatcher {
   param([Parameter(Mandatory = $true)][string]$DataDirectory)
   $powershell = Join-Path ($env:SystemRoot) 'System32\WindowsPowerShell\v1.0\powershell.exe'

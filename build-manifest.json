@@ -1,31 +1,21 @@
 {
   "name": "codex-control-plugin",
-  "version": "0.2.0+codex.local-20260918-064813",
-  "baseVersion": "0.2.0",
-  "builtAt": "2026-09-18T06:48:13.698Z",
+  "version": "0.2.2",
+  "baseVersion": "0.2.2",
+  "builtAt": "2026-10-23T05:57:46.908859+00:00",
   "platform": "win32",
   "architecture": "x64",
   "nodeVersion": "v24.19.0",
   "files": [
     {
       "path": ".codex-plugin/plugin.json",
-      "bytes": 1140,
-      "sha256": "4fb08558385160f74276cb4a5ac80ee5b8efe0789937a4fbe30fb22bbd1a281f"
+      "bytes": 1112,
+      "sha256": "ad49e05d930fe139f7121db25c1c0fcc8b54ec3289c90e27400d7a88bd4056b4"
     },
     {
       "path": ".gitignore",
-      "bytes": 380,
-      "sha256": "8df67d7a111f975bdcff52255793dbd195d8f2f1c497ffc81cdf2804fc74765b"
-    },
-    {
-      "path": "hooks/hooks.json",
-      "bytes": 632,
-      "sha256": "4e1a2de6d5350d0e9f8b9076fd949931f979378ff5b5bed9297211c4752442b2"
-    },
-    {
-      "path": "hooks/session-start.ps1",
-      "bytes": 3056,
-      "sha256": "ca1b098c56d7e1eee7c6bdd6ccdb02763b869644b160eef5c2c5c1e9768bb202"
+      "bytes": 359,
+      "sha256": "a162214c582c514e65c0146b8fff2b6e44595e0ad77da7a38dec83acd8a142fe"
     },
     {
       "path": "LICENSE",
@@ -34,98 +24,108 @@
     },
     {
       "path": "README.md",
-      "bytes": 4595,
-      "sha256": "f05189a8dbd3fcf008b0a2baeeb49ac1f72872a83ed5e32c2425321d6800400d"
+      "bytes": 4513,
+      "sha256": "c9e6475ed2a46d1e13ed36ff5aad14d4dfc3974836f80d395665c11a997cfaaa"
+    },
+    {
+      "path": "THIRD_PARTY_LICENSES_NODE.txt",
+      "bytes": 157606,
+      "sha256": "148eacf7863ef4329224a29398623077200a27194aa075569faf4a0a85566ca5"
+    },
+    {
+      "path": "hooks/hooks.json",
+      "bytes": 613,
+      "sha256": "c69996a7c9924cb4480eb5b3276113915994713eb3be6e67f285452e95e174b4"
+    },
+    {
+      "path": "hooks/session-start.ps1",
+      "bytes": 2929,
+      "sha256": "93cd00f23d1ad8cc64c976d787f5709408780149e0a18fd4d085ca7d460b8736"
     },
     {
       "path": "runtime/agent-core/index.mjs",
-      "bytes": 7554,
-      "sha256": "9f651fcc1563043cd3c415a7265e3153fc710fcedbdcbf49f723efdd5356def5"
+      "bytes": 9144,
+      "sha256": "f4d94f0004166a49fffb928ca18759fa5478c2c303f43be355937d3f0cb322ca"
     },
     {
       "path": "runtime/agent-core/package.json",
-      "bytes": 113,
-      "sha256": "dc86cc6c720adb994e9c90c3cf10b042e08ffb206595ead8ddc9589d3d52f4d1"
+      "bytes": 107,
+      "sha256": "1f4c96a789466fb4f42badc242749412ae9a88fceb468eaf9f13aa00bafa7f6b"
     },
     {
       "path": "runtime/agent-core/src/app-tools.mjs",
-      "bytes": 4181,
-      "sha256": "22525008543ed1ab4c297fb1e6c836c954304a2c6ba1bf96cabd4a80e6689cac"
+      "bytes": 4077,
+      "sha256": "7758eff2e50dd4d28605e7244b92ee4512b1498b260c46bacdaec360fe2f669b"
     },
     {
       "path": "runtime/agent-core/src/cli-resume.mjs",
-      "bytes": 1453,
-      "sha256": "694219234f635ac3bd4b8342ba8ac94b437eb35bac7ad48b627f0cdc036833e5"
+      "bytes": 1414,
+      "sha256": "9f6cf9e8c3ac4718f5ef812ce0b5234e5667cd7f06011307d8d905ca5f2d0fff"
     },
     {
       "path": "runtime/agent-core/src/config.mjs",
-      "bytes": 1493,
-      "sha256": "436e1cb2af099aa75399720ccf7947da15f387def2aaf8d11d12ca1d3fe68fb5"
+      "bytes": 1456,
+      "sha256": "3bbaa9ee01f17b114bca22ede8da1e9cfe3c660eb368523445325d6395b07a82"
     },
     {
       "path": "runtime/agent-core/src/journal.mjs",
-      "bytes": 1039,
-      "sha256": "7f6a72cd3e49a1cf2f081a3900678fc8a0345355acac8fe846192894824328b5"
+      "bytes": 1013,
+      "sha256": "da600fce74f6db38f2198a6df741a911e5df19d7130051a8424a4f2bac01a68f"
     },
     {
       "path": "runtime/agent-core/src/relay-client.mjs",
-      "bytes": 1454,
-      "sha256": "09f0096b29e8b2cedd79d7d09d36c8a9a4b2dc814efae07bcd6d9ba2071e151d"
+      "bytes": 1413,
+      "sha256": "deee86eda76ff37d5d428d0bcb3da70082f08da6f96992c212f7575c721ef835"
     },
     {
       "path": "runtime/agent-core/src/rollouts.mjs",
-      "bytes": 4012,
-      "sha256": "0364b1ad48fdd2d4279783c6a9d2cafddcd4db0369f2c331f111c6a2d3bd5ef5"
+      "bytes": 3930,
+      "sha256": "4a00570e6547609af2dfc8cafbd20eb7410f5f7d8cb5ce70d53cede362acb879"
     },
     {
       "path": "runtime/agent-core/src/state.mjs",
-      "bytes": 7577,
-      "sha256": "7868b4dd512108af623ab1366c50a72fa8901edae7942f5eb350fabbae0c4dd8"
+      "bytes": 7509,
+      "sha256": "2a53515289e0b5f3300ede0520e71e7f5a7ac0ea373ccceef1a9747cfd686bfe"
     },
     {
       "path": "runtime/desktop-ipc/index.mjs",
-      "bytes": 86,
-      "sha256": "ec8f8eac4b28bf6719ffae1c7db3802613e055edb4a457cad349b4b0daa71e3a"
+      "bytes": 84,
+      "sha256": "ecf8e8ddc56391f1c1300f92eaa03bd4f0af8cc9bee8d5220bbe8c10f787de86"
     },
     {
       "path": "runtime/desktop-ipc/ipc.mjs",
-      "bytes": 3625,
-      "sha256": "d62d8cbafaa8635f39abaa83cc64f5dcc7564985b7c578bc86ad14c3ea3a53ed"
+      "bytes": 3563,
+      "sha256": "2eaf320b4eaf536ef885dacb2d2d973e255d1867590764475e1abcde613c3324"
     },
     {
       "path": "runtime/desktop-ipc/package.json",
-      "bytes": 116,
-      "sha256": "ae5acd8d14beb8eac71c45882da59273efa8dbe871f147df20661b440378b747"
+      "bytes": 110,
+      "sha256": "52a7f3bc77b80bb3afc2fc042f6b2cec8cea4a3828525b46605f5cbebcf2b978"
     },
     {
       "path": "runtime/desktop-ipc/tasks.mjs",
-      "bytes": 10993,
-      "sha256": "926fe3ed2f4b31c477033f0416a91211a46220efe5fd6835c90444d0b1f06662"
-    },
-    {
-      "path": "runtime/node.exe",
-      "bytes": 92825416,
-      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+      "bytes": 10805,
+      "sha256": "dd2c9aaf038c2219a313c547f47023d54e74b26839355cab4388c1dd54ed2160"
     },
     {
       "path": "runtime/protocol/index.mjs",
-      "bytes": 5843,
-      "sha256": "970b1c8063e1fa23da9ba283f6f6401071b794886bfb847b6a906bc3c0343618"
+      "bytes": 5716,
+      "sha256": "04036c3283a5a4ac29527ab1639b576a98956b72aedf899bb5b7a9b8fee9cf23"
     },
     {
       "path": "runtime/protocol/package.json",
-      "bytes": 113,
-      "sha256": "fe088d07c03137c90ea3f34afcdaf03444e8af4a7f220b9695bedd5fa0d151fe"
+      "bytes": 107,
+      "sha256": "0b483afa204adb17e1fdb47d1a3b27f77913e4509de7b86613a06da8aebe4e57"
     },
     {
       "path": "scripts/agent-daemon.mjs",
-      "bytes": 7704,
-      "sha256": "34b733716921ea3bd5857dd0f0b57a51277b625f9b8fa524a2186f46f0ec4969"
+      "bytes": 7493,
+      "sha256": "ecbe7810b5bc57b54120e99abab2b78a382342e0b0dac3550cdc1a3b6be2a7fb"
     },
     {
       "path": "scripts/common.ps1",
-      "bytes": 4996,
-      "sha256": "3b7ebf675cc7c5f2f0f5cebec5de0cb5900c18f3b0a59302d1b88e85af6f7b6c"
+      "bytes": 5563,
+      "sha256": "f7a42a501df2a19c6aa6f977e972e00fb3d312ed13cc22a0af1376d1671f99a3"
     },
     {
       "path": "scripts/configure-agent.ps1",
@@ -134,8 +134,8 @@
     },
     {
       "path": "scripts/create-device-claim.mjs",
-      "bytes": 3863,
-      "sha256": "dab3c325a5a423cc723e417e839b2cfcc41d72f0ea23ebf3f56bf0a04784a426"
+      "bytes": 3779,
+      "sha256": "9a85457fdcc03bb01bddd137497ea5a27ac64581085b2903ed2de40353ce3f9f"
     },
     {
       "path": "scripts/daemon-lib.mjs",
@@ -149,8 +149,8 @@
     },
     {
       "path": "scripts/disconnect-agent.ps1",
-      "bytes": 1077,
-      "sha256": "94bdc62d32998a6745956105a5954e0d42af23e15e8bad64019a30e92812bce9"
+      "bytes": 1051,
+      "sha256": "253d88951f8cc05dd4de382001ccc14274b22adf800ebed0558d7f645c6e31e8"
     },
     {
       "path": "scripts/get-agent-status.ps1",
@@ -158,29 +158,32 @@
       "sha256": "63af703d07f220167d396f157e7334db0dc68c0b81e09e0e1a1cc8f0f565060e"
     },
     {
+      "path": "scripts/restart-agent.ps1",
+      "bytes": 1028,
+      "sha256": "b29da536907db21bea6ef0f32d09479f2585fcb5fc5b36cc95a83b0f841f623c"
+    },
+    {
       "path": "scripts/start-device-claim.ps1",
-      "bytes": 6800,
-      "sha256": "d7069612dacd067c7f9f4f42f61441fdb97449bb898ccf9332909dceb00800b3"
+      "bytes": 6655,
+      "sha256": "91962612b7d3d2588e12cec3190ba45fdf14cf87f745a4031209592ed153e495"
     },
     {
       "path": "scripts/verify-device-claim.ps1",
-      "bytes": 6298,
-      "sha256": "0ae2e1831a2c28311350a0d59d34c8d37ad9b0e8b7f4bf7bcf8c7d0c06b5227a"
+      "bytes": 6151,
+      "sha256": "4ee01c588459f83e0f880a8998873a744827cc9f1a2369bf088aa0f300713e3c"
     },
     {
       "path": "scripts/watch-device-claim.ps1",
-      "bytes": 4927,
-      "sha256": "08884a673140677979ad73f9d4e2e10da8c4fa104869e86ee680832341bd324e"
+      "bytes": 5336,
+      "sha256": "16e517f06c1f3898b90749aa7c9d3cbe20a67eb03d64225a2c6750a2b500d8cb"
     },
     {
       "path": "skills/codex-control-plugin/SKILL.md",
-      "bytes": 4017,
-      "sha256": "ae0827e1b391e3c41555534f633e17612d2e5a69095e9b135ac92caf2a46cac2"
-    },
-    {
-      "path": "THIRD_PARTY_LICENSES_NODE.txt",
-      "bytes": 157606,
-      "sha256": "148eacf7863ef4329224a29398623077200a27194aa075569faf4a0a85566ca5"
+      "bytes": 4305,
+      "sha256": "ed70313a403af5f46efc33574c4edf334e4008143cd2700c6b729a4e0df3710e"
     }
-  ]
+  ],
+  "sourceTreeState": "windows-hotfix-overlay",
+  "baseMarketplaceCommit": "3b2b0bacd6693f28146080bbc4e14995e0ccf35f",
+  "verifiedHotfixArtifactSHA256": "90393694e45ae1c6d474d159935b7abecc6c99040c7c35fbe93772df4dfef665"
 }

@@ -8,7 +8,10 @@ export function defaultSessionIndexPath() {
 }
 
 export function readSessionIndex(file = defaultSessionIndexPath(), limit = 100) {
-  const lines = fs.readFileSync(file, 'utf8').split(/\r?\n/).filter(Boolean);
+  let content;
+  try { content = fs.readFileSync(file, 'utf8'); }
+  catch (error) { if (error.code === 'ENOENT') return []; throw error; }
+  const lines = content.split(/\r?\n/).filter(Boolean);
   const entries = [], seen = new Set();
   for (let index = lines.length - 1; index >= 0 && entries.length < limit; index -= 1) {
     try {
@@ -23,9 +26,8 @@ export function readSessionIndex(file = defaultSessionIndexPath(), limit = 100) 
 
 export function extractLatestTurn(state) {
   const entities = state?.turnHistory?.history?.entitiesByKey ?? {};
-  const turns = Object.entries(entities)
-    .filter(([key, value]) => key.startsWith('turn:') && value && typeof value === 'object')
-    .map(([, value]) => value)
+  const turns = [...Object.values(entities), ...(Array.isArray(state?.turns) ? state.turns : [])]
+    .filter(value => value && typeof value === 'object')
     .filter(turn => typeof turn.turnId === 'string')
     .sort((left, right) => (right.turnStartedAtMs ?? 0) - (left.turnStartedAtMs ?? 0));
   return turns[0] ?? null;

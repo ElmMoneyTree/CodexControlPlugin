@@ -18,7 +18,7 @@ https://github.com/ElmMoneyTree/CodexControlPlugin.git
 - 使用 Windows 10/11 x64，并安装、登录和打开 Codex Desktop；本插件通过 Desktop 的本机接口操作任务。
 - 安装 Git，并确保 PowerShell 中可以运行 `git --version` 和 `codex --version`。安装命令已在 Codex CLI 0.153.4 验证；CLI 需要支持 `plugin marketplace` 和 `plugin add`。
 - 确认电脑可以访问 GitHub 和连接服务 `https://codex-relay.kuajingvs.com`。
-- 在 iPhone App 或浏览器中登录自己的 Codex Control 账号，准备认领设备。
+- 在 iPhone App中登录自己的 Codex Control 账号，准备认领设备。
 
 这是公开安装仓库，下载安装无需 GitHub 账号或令牌。插件内置 Windows Node.js，无需另外安装 Node.js，也不需要在目标电脑构建源码。
 
@@ -89,3 +89,12 @@ codex-control-plugin@codex-control
 ## 许可证
 
 CodexControlPlugin 使用 [MIT License](./LICENSE)。发布仓库还包含内置 Node.js 24.19.0 的完整第三方许可证文件：`plugins/codex-control-plugin/THIRD_PARTY_LICENSES_NODE.txt`。
+
+## 更新到 0.2.2
+
+```powershell
+codex plugin marketplace upgrade codex-control
+codex plugin add codex-control-plugin@codex-control
+```
+
+本版修复 Windows 认领后 Agent 的启动路径、桌面工具桥不可用时的同步，以及首次使用缺少任务索引时的同步。保留原设备身份，无需重新认领。若设备已认领但仍未 connected，在新版插件目录执行 `scripts/restart-agent.ps1`，保持 Codex Desktop 打开，再通过 `scripts/get-agent-status.ps1` 检查连接状态。认领页的成功提示和自动关闭还需要服务端 Relay 0.2.2。
