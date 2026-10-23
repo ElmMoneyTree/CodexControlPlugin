@@ -8,8 +8,9 @@ import { requestDeviceClaim } from './create-device-claim.mjs';
 import { MacKeychain, credentialAccount, ensurePrivateDirectory } from './macos-storage.mjs';
 import { writeStatus, appendLog } from './daemon-lib.mjs';
 import { DesktopIPC } from '../runtime/desktop-ipc/index.mjs';
+import { watchDesktop } from './macos-lifecycle.mjs';
 
-const VERSION = '0.3.3';
+const VERSION = '0.3.4';
 const DEFAULT_RELAY = 'https://codex-relay.kuajingvs.com';
 const pluginRoot = path.resolve(import.meta.dirname, '..');
 export const defaultDataDirectory = () => path.join(os.homedir(), 'Library/Application Support/Codex Control Agent Plugin');
@@ -65,11 +66,11 @@ export function launchPlist(data, node = process.execPath, root = pluginRoot) {
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
 <key>Label</key><string>${xml(launchLabel(data))}</string>
-<key>ProgramArguments</key><array>${[node, path.join(root, 'scripts/macos-agent.mjs'), 'run', '--data', data].map(value => `<string>${xml(value)}</string>`).join('')}</array>
+<key>ProgramArguments</key><array>${[node, path.join(root, 'scripts/macos-agent.mjs'), 'watch', '--data', data].map(value => `<string>${xml(value)}</string>`).join('')}</array>
 <key>EnvironmentVariables</key><dict>${Object.entries(environment).map(([key, value]) => `<key>${key}</key><string>${xml(value)}</string>`).join('')}</dict>
 <key>WorkingDirectory</key><string>${xml(root)}</string>
 <key>RunAtLoad</key><true/>
-<key>KeepAlive</key><dict><key>SuccessfulExit</key><false/></dict>
+<key>KeepAlive</key><true/>
 <key>ThrottleInterval</key><integer>10</integer>
 <key>StandardOutPath</key><string>${xml(path.join(data, 'launcher.log'))}</string>
 <key>StandardErrorPath</key><string>${xml(path.join(data, 'launcher.log'))}</string>
@@ -78,7 +79,7 @@ export function launchPlist(data, node = process.execPath, root = pluginRoot) {
 
 function launchctl(args) { return spawnSync('/bin/launchctl', args, { encoding: 'utf8', timeout: 10_000 }); }
 
-export function startService(data) {
+export async function startService(data) {
   const directory = path.join(os.homedir(), 'Library/LaunchAgents');
   fs.mkdirSync(directory, { recursive: true });
   const file = path.join(directory, `${launchLabel(data)}.plist`);
@@ -88,6 +89,13 @@ export function startService(data) {
   if (previous !== content) {
     const stopped = launchctl(['bootout', target]);
     if (stopped.status !== 0 && launchctl(['print', target]).status === 0) throw new Error('Unable to stop the previous Agent version for upgrade.');
+    // launchd may still expose the old job briefly after bootout returns. Do
+    // not kickstart that disappearing job instead of registering its replacement.
+    const deadline = Date.now() + 15_000;
+    while (launchctl(['print', target]).status === 0) {
+      if (Date.now() >= deadline) throw new Error('The previous LaunchAgent is still unloading. Retry start shortly.');
+      await delay(100);
+    }
     // bootout can return before the old daemon releases its single-instance
     // socket. Wait for it before starting the replacement version.
     const drained = spawnSync(process.execPath, [path.join(pluginRoot, 'scripts/agent-daemon.mjs'), '--stop', '--data', data], {
@@ -133,7 +141,7 @@ export async function claimDevice(options, { keychain = new MacKeychain(), reque
   return withClaimLock(data, async () => {
     const config = readJson(path.join(data, 'agent-config.json'));
     if (config) {
-      start(data);
+      await start(data);
       return { state: 'already-claimed', deviceId: config.deviceId, name: config.name };
     }
     const pendingFile = path.join(data, 'pending-claim.json');
@@ -142,7 +150,7 @@ export async function claimDevice(options, { keychain = new MacKeychain(), reque
       if (options.relayUrl && relayOrigin(options.relayUrl) !== existing.relayUrl) throw new Error('The pending claim belongs to a different Relay.');
       const secret = keychain.read(existing.credentialAccount);
       if (!secret?.claimSecret) throw new Error('Pending claim credentials are unavailable in Keychain.');
-      start(data);
+      await start(data);
       if (!options.noBrowser) open(existing, secret.claimSecret);
       return safeClaimSummary(existing, true);
     }
@@ -160,7 +168,7 @@ export async function claimDevice(options, { keychain = new MacKeychain(), reque
     keychain.write(pending.credentialAccount, { claimSecret: claim.claimSecret, pollToken: claim.pollToken, privateKeyPkcs8: claim.privateKeyPkcs8 });
     writeStatus(pendingFile, pending);
     writeAgentStatus(data, safeClaimSummary(pending));
-    start(data);
+    await start(data);
     if (!options.noBrowser) open(pending, claim.claimSecret);
     return safeClaimSummary(pending);
   });
@@ -284,7 +292,8 @@ async function main() {
   if (options.command === 'verify') return verify();
   ensurePrivateDirectory(options.data);
   if (options.command === 'claim') return claimDevice(options);
-  if (options.command === 'start') { startService(options.data); return { state: 'starting' }; }
+  if (options.command === 'start') { await startService(options.data); return { state: 'starting' }; }
+  if (options.command === 'watch') { await watchDesktop(options.data, pluginRoot); return; }
   if (options.command === 'run') { await runService(options.data); return; }
   if (options.command === 'disconnect') return disconnect(options.data);
   if (options.command === 'hook') {
@@ -304,7 +313,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     if (result) process.stdout.write(`${JSON.stringify(result)}\n`);
   } catch (error) {
     process.stderr.write(`${error.message}\n`);
-    if (process.argv[2] === 'run') {
+    if (['run', 'watch'].includes(process.argv[2])) {
       const options = parseArguments(process.argv.slice(2));
       appendLog(path.join(options.data, 'agent.log'), `macOS launcher failed: ${error.message}`);
       writeAgentStatus(options.data, { state: 'error', detail: error.message });

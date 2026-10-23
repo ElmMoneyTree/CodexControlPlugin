@@ -1,4 +1,5 @@
 import { EventEmitter } from 'node:events';
+import { ASYNC_INPUT_METHOD, asyncQuestionReply, pendingAsyncInputs } from './async-input.mjs';
 
 export class DesktopTasks extends EventEmitter {
   constructor(ipc) {
@@ -76,6 +77,12 @@ export class DesktopTasks extends EventEmitter {
     });
   }
   async submitUserInput(id, { requestId, turnId, answers }) {
+    if (String(requestId).startsWith('async-input:')) {
+      return this.withLiveRequest(id, { requestId, turnId, method: ASYNC_INPUT_METHOD }, async request => {
+        const response = validateUserAnswers(request.params.questions, answers);
+        await this.startTurn(id, asyncQuestionReply(request, response.answers.answer.answers[0]));
+      });
+    }
     return this.withLiveRequest(id, { requestId, turnId, method: 'item/tool/requestUserInput' }, async request => {
       const response = validateUserAnswers(request.params.questions, answers);
       await this.reply(id, 'thread-follower-submit-user-input', { requestId: request.id, response });
@@ -100,7 +107,8 @@ export class DesktopTasks extends EventEmitter {
     this.pending.add(key);
     try {
       const state = await this.snapshot(id);
-      const request = state.requests?.find(item => String(item.id) === String(requestId)
+      const requests = method === ASYNC_INPUT_METHOD ? pendingAsyncInputs(state) : (state.requests ?? []);
+      const request = requests.find(item => String(item.id) === String(requestId)
         && (optionalTurn && turnId == null ? true : item.params?.turnId === turnId));
       if (!request) throw new Error('Request expired or already resolved');
       if (request.method !== method) throw new Error('Request type changed before submission');

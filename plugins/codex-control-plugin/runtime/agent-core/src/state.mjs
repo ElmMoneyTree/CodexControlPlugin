@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { ASYNC_INPUT_METHOD, pendingAsyncInputs } from '../../desktop-ipc/async-input.mjs';
 
 export function defaultSessionIndexPath() {
   const root = process.env.CODEX_HOME || path.join(os.homedir(), '.codex');
@@ -40,7 +41,7 @@ export function buildAgentState(listedTasks, snapshots = new Map()) {
     if (!threadId) continue;
     const snapshot = snapshots.get(threadId);
     const latestTurn = snapshot && extractLatestTurn(snapshot);
-    const pending = snapshot?.requests ?? [];
+    const pending = [...(snapshot?.requests ?? []), ...pendingAsyncInputs(snapshot)];
     const latestMessage = latestAgentMessage(latestTurn) ?? textOrNull(listed.latestMessage, 20_000);
     const runtime = snapshot?.threadRuntimeStatus;
     const status = deriveStatus(listed, runtime, latestTurn, pending);
@@ -145,6 +146,7 @@ function requestKind(method) {
     'item/fileChange/requestApproval': 'file',
     'item/permissions/requestApproval': 'permissions',
     'item/tool/requestUserInput': 'user_input',
+    [ASYNC_INPUT_METHOD]: 'user_input',
     'mcpServer/elicitation/request': 'mcp',
   })[method] ?? 'unsupported';
 }

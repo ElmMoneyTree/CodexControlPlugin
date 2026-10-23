@@ -69,7 +69,9 @@ Scan the opened QR page in the signed-in mobile app, select your workspace, and 
 
 Mac credentials are stored in Keychain. Public configuration, sanitized status, and logs are in `~/Library/Application Support/Codex Control Agent Plugin`. `bash scripts/macos-agent.sh disconnect` stops and removes this plugin's LaunchAgent and local credentials. Revoke the device in the phone app if its server credential must also be invalidated.
 
-Source builds require Xcode command line tools to run `bash scripts/build-macos-runtime.sh`. This creates a universal `runtime/macos/keychain-helper` for release packaging; end users do not need Swift or Xcode. The shared agent reads the current desktop's task-history layout, including `tail:*` entities.
+Once registered, the macOS LaunchAgent observes the Codex application's launch and termination through NSWorkspace (`com.openai.codex`). Opening the desktop starts the sync agent without needing to open a chat. Quitting the desktop stops the sync agent immediately, with a five-second bound for forced cleanup; opening it again starts a new single instance. Only the lightweight lifecycle observer remains while Codex is closed. Temporary IPC unavailability while the application is still running does not stop the agent. The existing trusted SessionStart hook registers or upgrades this observer during initial setup; `bash scripts/macos-agent.sh start` also applies an upgrade directly. Windows retains its SessionStart startup and 90-second IPC grace period.
+
+Source builds require Xcode command line tools to run `bash scripts/build-macos-runtime.sh`. This creates universal `runtime/macos/keychain-helper` and `runtime/macos/desktop-lifecycle-helper` executables for release packaging; end users do not need Swift or Xcode. The shared agent reads the current desktop's task-history layout, including `tail:*` entities.
 
 ## Source layout
 
@@ -114,6 +116,8 @@ With a compatible Relay and iPhone App, the agent responds to explicit phone rea
 Each response reads at most a 1 MiB log window and contains up to 100 messages. The opaque cursor belongs to the phone, so retries or agent/Relay restarts can resume without a server transcript. Text over 100,000 UTF-16 code units is truncated and marked; individual records exceeding the read window are skipped. Saved phone conversations remain readable offline. Deletion and clear-all remove local bodies and preserve content-free sync/deletion markers to prevent old messages from reappearing. Upgrade Relay, plugin, and iPhone App together.
 
 Task completion requires a successful latest-turn record from a fresh Desktop snapshot or a rollout lifecycle event with a turn ID. Idle state, a sidebar completion label, and assistant text alone do not establish completion. New turns replace prior completion; failed, cancelled, not-loaded, idle, and unknown states remain distinct. Snapshots not refreshed during the current sync are not used to infer the current task state.
+
+Async question cards are synchronized to the phone inbox as structured user-input requests, including cards whose model turn has already completed. The agent scans idle chats in bounded batches and continues refreshing discovered requests until a recorded desktop answer resolves them. Answers use the desktop's question-reply format and revalidate the exact question and turn before submission; free-text answers are supported alongside suggested choices. Conversation history keeps the question and answer readable without exposing the reply envelope.
 
 ## Creating chats from the phone
 

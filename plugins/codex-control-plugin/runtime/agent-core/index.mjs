@@ -8,6 +8,7 @@ import { buildAgentState } from './src/state.mjs';
 import { LocalThreadCatalog } from './src/thread-catalog.mjs';
 import { ConversationReader } from './src/conversation.mjs';
 import { normalizeProjects, normalizeCreation, readChatGPTConversation } from './src/new-chat.mjs';
+import { pendingAsyncInputs } from '../desktop-ipc/async-input.mjs';
 
 export class CodexDeviceAgent {
   constructor(config, { taskLimit = 50, activeSnapshotLimit = 12, platform = process.platform } = {}) {
@@ -72,7 +73,17 @@ export class CodexDeviceAgent {
         const rollout = item.kind === 'chatgpt' ? null : this.rollouts.read(item.id);
         return { ...item, backend: item.kind, rolloutState: rollout, latestMessage: rollout?.latestMessage ?? null, updatedAt: rollout?.updatedAt ?? item.updatedAt };
       });
-      const active = listed.filter(item => item.kind !== 'chatgpt' && (item.status === 'active' || item.status === 'running' || item.rolloutState?.status === 'running' || this.snapshots.get(item.id)?.threadRuntimeStatus?.type === 'active')).slice(0, this.activeSnapshotLimit);
+      const local = listed.filter(item => item.kind !== 'chatgpt');
+      const pending = local.filter(item => hasPendingInput(this.snapshots.get(item.id)));
+      const running = local.filter(item => item.status === 'active' || item.status === 'running' || item.rolloutState?.status === 'running' || this.snapshots.get(item.id)?.threadRuntimeStatus?.type === 'active').slice(0, this.activeSnapshotLimit);
+      const urgent = new Map([...pending, ...running].map(item => [item.id, item]));
+      // Idle chats can still have async questions. Scan them in bounded batches,
+      // then keep refreshing discovered requests until the desktop records a reply.
+      const idle = local.filter(item => !urgent.has(item.id));
+      const idleOffset = (this.idleSnapshotOffset ?? 0) % Math.max(1, idle.length);
+      const idleBatch = [...idle.slice(idleOffset), ...idle.slice(0, idleOffset)].slice(0, Math.min(4, this.activeSnapshotLimit));
+      this.idleSnapshotOffset = idle.length ? (idleOffset + idleBatch.length) % idle.length : 0;
+      const active = [...urgent.values(), ...idleBatch];
       const results = await Promise.allSettled(active.map(item => this.tasks.snapshot(item.id)));
       results.forEach((result, position) => {
         const id = active[position].id;
@@ -89,10 +100,10 @@ export class CodexDeviceAgent {
     } else {
       // Refresh loaded tasks through IPC when the app tools bridge is unavailable. Rotate older entries so a long-
       // running task remains visible even if its title/index timestamp is old.
-      const knownActive = index.filter(item => this.snapshots.get(item.id)?.threadRuntimeStatus?.type === 'active');
+      const knownActive = index.filter(item => this.snapshots.get(item.id)?.threadRuntimeStatus?.type === 'active' || hasPendingInput(this.snapshots.get(item.id)));
       const offset = this.snapshotOffset ?? 0;
       const rotated = [...index.slice(offset), ...index.slice(0, offset)];
-      const candidates = [...new Map([...knownActive, ...rotated].map(item => [item.id, item])).values()].slice(0, this.activeSnapshotLimit);
+      const candidates = [...new Map([...knownActive, ...rotated.slice(0, this.activeSnapshotLimit)].map(item => [item.id, item])).values()];
       this.snapshotOffset = index.length ? (offset + this.activeSnapshotLimit) % index.length : 0;
       await Promise.allSettled(candidates.map(async item => {
         try {
@@ -229,7 +240,14 @@ export class CodexDeviceAgent {
           imageActivity ||= request.kind === 'attachment' || response.messages?.some(message => message.attachments?.some(image => !image.unavailableReason));
         } catch (error) { response = { error: request.kind === 'attachment' ? 'Image is unavailable on the computer' : error.message }; }
         try { await this.relay.respondConversation(request.id, response); }
-        catch (error) { if (error.status !== 404) throw error; }
+        catch (error) {
+          if (error.status === 404) continue;
+          // A rejected history page belongs to this read request. Surface its
+          // error to the phone without taking task/inbox synchronization offline.
+          if (error.status !== 400 || response.error) throw error;
+          try { await this.relay.respondConversation(request.id, { error: error.message }); }
+          catch (failure) { if (failure.status !== 404) throw failure; }
+        }
       }
       // Let the phone request subsequent chunks without waiting for another
       // full task-state cycle. Bound the burst so approvals remain responsive.
@@ -285,4 +303,8 @@ export { buildAgentState, defaultSessionIndexPath, extractLatestTurn, readSessio
 function isMissingDesktopOwner(error) {
   const message = error instanceof Error ? error.message : String(error);
   return /no-client-found|thread stream owner became unavailable/i.test(message);
+}
+
+function hasPendingInput(snapshot) {
+  return Boolean(snapshot?.requests?.length || pendingAsyncInputs(snapshot).length);
 }

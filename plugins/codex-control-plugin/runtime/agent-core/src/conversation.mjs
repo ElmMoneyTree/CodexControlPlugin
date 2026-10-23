@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import { createHash } from 'node:crypto';
 import { ImageAttachments, imageCandidates, markdownImages, IMAGE_CHUNK_BYTES } from './image-attachments.mjs';
+import { questionReplyText } from '../../desktop-ipc/async-input.mjs';
 
 // Only user-visible events are eligible. Raw model inputs, reasoning and
 // unrelated tool results can contain private instructions and are never read.
@@ -12,7 +13,7 @@ export function conversationMessage(record, offset, describeImages = null) {
     role = item.type === 'UserMessage' ? 'user' : 'assistant';
     text = item.content?.filter(part => ['Text', 'text', 'input_text', 'output_text'].includes(part.type))
       .map(part => part.text ?? '').join('\n') ?? '';
-    const markdown = markdownImages(text);
+    const markdown = markdownImages(role === 'user' ? questionReplyText(text) : text);
     text = markdown.text;
     candidates = [...imageCandidates(record), ...markdown.images];
     id = item.id;
@@ -20,7 +21,8 @@ export function conversationMessage(record, offset, describeImages = null) {
     role = 'assistant'; id = item.id; candidates = imageCandidates(record);
   } else if (['user_message', 'agent_message'].includes(payload.type)) {
     role = payload.type === 'user_message' ? 'user' : 'assistant';
-    const markdown = markdownImages(typeof payload.message === 'string' ? payload.message : '');
+    const message = typeof payload.message === 'string' ? payload.message : '';
+    const markdown = markdownImages(role === 'user' ? questionReplyText(message) : message);
     text = markdown.text; candidates = markdown.images;
     for (const source of [...(payload.images ?? []), ...(payload.local_images ?? [])]) {
       candidates.push(typeof source === 'string' ? { source } : { source: source?.image_url ?? source?.url ?? source?.path });

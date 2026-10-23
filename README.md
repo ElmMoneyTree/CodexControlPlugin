@@ -1,11 +1,13 @@
 # CodexControlPlugin
 
 > [!IMPORTANT]
-> **0.3.3 支持 Windows 10/11 x64，以及 macOS Apple Silicon / Intel。** Windows 内置 `node.exe`；macOS 使用 Node.js 24 及以上（优先复用 Codex 桌面签名运行时），通过 Unix socket 连接 Codex Desktop。Linux 与 Windows ARM64 尚未支持。
+> **0.3.4 支持 Windows 10/11 x64，以及 macOS Apple Silicon / Intel。** Windows 内置 `node.exe`；macOS 使用 Node.js 24 及以上（优先复用 Codex 桌面签名运行时），通过 Unix socket 连接 Codex Desktop。Linux 与 Windows ARM64 尚未支持。
 
 这是 **CodexControlPlugin 的 Windows / macOS 插件安装仓库**。仓库中保存的是 Codex 可以直接安装的 marketplace 和已构建运行文件，不是 Codex Control 主项目的源码仓库。
 
-0.3.3 增加手机新建聊天：选择 Codex / ChatGPT Work、对应项目或不指定项目，并发送首条消息。请同步更新手机 App 和 Relay；插件更新后重启桌面应用并打开一个已有聊天，以加载新增的 MCP 连接组件。后台服务通过设备凭据认证此组件，手机可继续查看创建结果、阅读消息和回复。
+支持从手机新建聊天：选择 Codex / ChatGPT Work、对应项目或不指定项目，并发送首条消息。请同步更新手机 App 和 Relay；插件更新后重启桌面应用并打开一个已有聊天，以加载新增的 MCP 连接组件。后台服务通过设备凭据认证此组件，手机可继续查看创建结果、阅读消息和回复。
+
+0.3.4 修复手机待办中的异步问题同步与回答，并让 macOS 同步 Agent 随 Codex 应用启动和退出；无需先打开聊天，退出后不再等待 90 秒。
 
 插件安装地址固定为：
 

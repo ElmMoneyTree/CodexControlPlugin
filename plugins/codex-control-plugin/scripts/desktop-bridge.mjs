@@ -42,7 +42,7 @@ for await (const line of lines) {
   if (request.id == null) continue;
   let result;
   try {
-    if (request.method === 'initialize') result = { protocolVersion: request.params?.protocolVersion || '2024-11-05', capabilities: { tools: {} }, serverInfo: { name: 'codex-control-desktop-bridge', version: '0.3.3' } };
+    if (request.method === 'initialize') result = { protocolVersion: request.params?.protocolVersion || '2024-11-05', capabilities: { tools: {} }, serverInfo: { name: 'codex-control-desktop-bridge', version: '0.3.4' } };
     else if (request.method === 'ping') result = {};
     else if (request.method === 'tools/list') result = { tools: [{ name: 'desktop_bridge_status', description: 'Read the Codex Control phone connection bridge status. Chat creation and messaging are accepted only from the authenticated device agent.', inputSchema: { type: 'object', properties: {}, additionalProperties: false }, annotations: { readOnlyHint: true } }] };
     else if (request.method === 'tools/call' && request.params?.name === 'desktop_bridge_status') {

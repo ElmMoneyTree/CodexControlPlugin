@@ -14,9 +14,10 @@ import {
   writeStatus,
 } from './daemon-lib.mjs';
 
-const VERSION = '0.3.3';
+const VERSION = '0.3.4';
 const CYCLE_INTERVAL_MS = positiveNumber(process.env.CODEX_CONTROL_AGENT_INTERVAL_MS, 3_000);
 const DESKTOP_GRACE_MS = positiveNumber(process.env.CODEX_CONTROL_AGENT_DESKTOP_GRACE_MS, 90_000);
+const desktopSupervised = process.platform === 'darwin' && process.env.CODEX_CONTROL_AGENT_DESKTOP_SUPERVISED === '1';
 const options = parseDaemonArguments(process.argv.slice(2));
 const pipeName = daemonPipeName(options.dataDirectory);
 
@@ -111,7 +112,7 @@ try {
         desktopUnavailableSince: desktopMissingSince ? new Date(desktopMissingSince).toISOString() : null,
         updatedAt: new Date().toISOString(),
       });
-      if (desktopMissingSince && Date.now() - desktopMissingSince >= DESKTOP_GRACE_MS) {
+      if (!desktopSupervised && desktopMissingSince && Date.now() - desktopMissingSince >= DESKTOP_GRACE_MS) {
         stopReason = 'codex-desktop-unavailable';
         break;
       }

@@ -1,6 +1,7 @@
 # Windows runtime executable is injected by the release build.
 # The JavaScript runtime source is tracked in this repository.
 runtime/node.exe
+runtime/macos/keychain-helper
 
 # Dependencies and build output
 node_modules/

@@ -1,11 +1,11 @@
 {
   "name": "codex-control-plugin",
-  "version": "0.3.3",
-  "baseVersion": "0.3.3",
-  "builtAt": "2026-10-23T08:15:42.461Z",
-  "sourceCommit": "5b2181308759872beb7980c6f235b10e123e9507",
+  "version": "0.3.4",
+  "baseVersion": "0.3.4",
+  "builtAt": "2026-10-23T09:40:19.949Z",
+  "sourceCommit": "a0addd72d54237f5933a55f59e778845105e3842",
   "sourceTreeState": "clean",
-  "archiveFile": "codex-control-plugin-0.3.3.zip",
+  "archiveFile": "codex-control-plugin-0.3.4.zip",
   "platforms": [
     "win32-x64",
     "darwin-arm64",
@@ -16,12 +16,12 @@
     {
       "path": ".codex-plugin/plugin.json",
       "bytes": 1144,
-      "sha256": "58b3191481cb3d79af70175bdc9e54b5ae57155fe9f49152e05351a5c555a1bd"
+      "sha256": "545068e9a29a7ea718c1c65b5db533181aa70c62915f7b77b503ac00bdf8f805"
     },
     {
       "path": ".gitignore",
-      "bytes": 359,
-      "sha256": "a162214c582c514e65c0146b8fff2b6e44595e0ad77da7a38dec83acd8a142fe"
+      "bytes": 389,
+      "sha256": "c5ab622607bb30540348ab808a10764214f556ffccef11575a5d310f83e45f29"
     },
     {
       "path": ".mcp.json",
@@ -45,18 +45,18 @@
     },
     {
       "path": "README.md",
-      "bytes": 11774,
-      "sha256": "b0cd228396081ec5369ff6bf4a1b1acd875af1ecc595f1c5ce99b912a310dce6"
+      "bytes": 13147,
+      "sha256": "072049a6b74e4d79e69318838ddbb3616ffc89d62154f9313dbad92a6c00c20f"
     },
     {
       "path": "runtime/agent-core/index.mjs",
-      "bytes": 16081,
-      "sha256": "7ab6518a7a4fc439310a9d960478735ebd10b336237d4424427d545d8d295e58"
+      "bytes": 17547,
+      "sha256": "ce26103361cd73d6e83666f01d5a045a41c3c853b016471df9ebe7aa7565c633"
     },
     {
       "path": "runtime/agent-core/package.json",
       "bytes": 107,
-      "sha256": "0804c33ec5a1505932635808585364d75fbf36f579a15a1358c992fcea7c787d"
+      "sha256": "e405d3b4902ae5f45e4ebb6835284250c3c57edf7a71acef8a3b1922bc51e381"
     },
     {
       "path": "runtime/agent-core/src/app-tools.mjs",
@@ -75,8 +75,8 @@
     },
     {
       "path": "runtime/agent-core/src/conversation.mjs",
-      "bytes": 9321,
-      "sha256": "ad705857313aec8b20110e35a67b668536222b2bd14cd507127f07f0532a6e67"
+      "bytes": 9512,
+      "sha256": "066e38f9238d950b536883e56bf7127390e8e36fab1145234993ac5b1c48e7ae"
     },
     {
       "path": "runtime/agent-core/src/desktop-bridge.mjs",
@@ -110,13 +110,18 @@
     },
     {
       "path": "runtime/agent-core/src/state.mjs",
-      "bytes": 9002,
-      "sha256": "a7d77ae5d70788b2c372e107ba69b595cf10a260329834d01cc6da6f1556672f"
+      "bytes": 9174,
+      "sha256": "86a52af3333902d87d37240d430c56a881d64e8e5e46d4e806eb25e6f1eb6416"
     },
     {
       "path": "runtime/agent-core/src/thread-catalog.mjs",
       "bytes": 4830,
       "sha256": "a8799f69c9dc1016d644f33722e88f366ba40fad2a5842dbec8584bdf96419b9"
+    },
+    {
+      "path": "runtime/desktop-ipc/async-input.mjs",
+      "bytes": 3471,
+      "sha256": "11fc3fa80b1063cd873cab10e6f0c17baef137e9469c901c46a5f645d444601a"
     },
     {
       "path": "runtime/desktop-ipc/index.mjs",
@@ -135,8 +140,18 @@
     },
     {
       "path": "runtime/desktop-ipc/tasks.mjs",
-      "bytes": 10805,
-      "sha256": "dd2c9aaf038c2219a313c547f47023d54e74b26839355cab4388c1dd54ed2160"
+      "bytes": 11361,
+      "sha256": "5622456551825efff918a26a9aa101d272a75e716ce2639553f72c9d446dfff3"
+    },
+    {
+      "path": "runtime/macos/desktop-lifecycle-helper",
+      "bytes": 233488,
+      "sha256": "d14bc84cf7ce84527bcea899227e8946cb30ee298f7751b719f235f4207d07e4"
+    },
+    {
+      "path": "runtime/macos/desktop-lifecycle.swift",
+      "bytes": 1404,
+      "sha256": "d18cb6bfb0c214e66e45c901f7d7a98a02b7edb31495021867e13a611c579c3a"
     },
     {
       "path": "runtime/macos/keychain-helper",
@@ -170,13 +185,13 @@
     },
     {
       "path": "scripts/agent-daemon.mjs",
-      "bytes": 7299,
-      "sha256": "0f376a233b01777e82aed3dcdbdf16796621052ee2235640784280dc2d689397"
+      "bytes": 7440,
+      "sha256": "dd7e28c7f1c6aedd21f4cdfd111a0219d01d551eb36b0b9e35418b07789f43d9"
     },
     {
       "path": "scripts/build-macos-runtime.sh",
-      "bytes": 752,
-      "sha256": "9f5dc1e6373fd350a92b75bc7ccae185eec54de9ae526bf2a373262d8c1e9d90"
+      "bytes": 810,
+      "sha256": "7fc2ac4609145bbf8357d07bab5f0c94b6b0c8c91b0b66c4155526db1ff9923d"
     },
     {
       "path": "scripts/common.ps1",
@@ -206,7 +221,7 @@
     {
       "path": "scripts/desktop-bridge.mjs",
       "bytes": 3408,
-      "sha256": "8fd2dc05b1b6eb23bb1199a88fb28043ac472da3f1df891e6688c0878ead362d"
+      "sha256": "03604b4407333e815fe83191500687a320660d2269183d30caa7657dcdece720"
     },
     {
       "path": "scripts/device-credential.mjs",
@@ -225,13 +240,18 @@
     },
     {
       "path": "scripts/macos-agent.mjs",
-      "bytes": 16874,
-      "sha256": "7e3d8908ccbbfacca89247b0fd3c8a2d56b27ab866e1f5b4c95b31644f6fc311"
+      "bytes": 17440,
+      "sha256": "b7e27d7e7769d054e6816fd0a27402bfc41f915838437662c3aae5d523448f1c"
     },
     {
       "path": "scripts/macos-agent.sh",
       "bytes": 1510,
       "sha256": "dd18b68d956a60623c8268facc328171dd7b32253b31bfc0757f4857898705e8"
+    },
+    {
+      "path": "scripts/macos-lifecycle.mjs",
+      "bytes": 4700,
+      "sha256": "830a7a9f196148a9cda4fbf15c58a13c2f60fd07702470893b2b800b759a6699"
     },
     {
       "path": "scripts/macos-storage.mjs",
@@ -260,8 +280,8 @@
     },
     {
       "path": "skills/codex-control-plugin/SKILL.md",
-      "bytes": 5844,
-      "sha256": "bd6c1a848ba695306b8718d73e723cafd6431dd9ea3ed1f428b0392513967bf0"
+      "bytes": 6184,
+      "sha256": "296086987828acac73660256fbf7c7b4a21cc84e42d21860be1db1523d77ae7c"
     },
     {
       "path": "THIRD_PARTY_LICENSES_NODE.txt",

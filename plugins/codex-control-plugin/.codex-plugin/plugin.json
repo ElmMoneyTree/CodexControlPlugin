@@ -1,6 +1,6 @@
 {
   "name": "codex-control-plugin",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "mcpServers": "./.mcp.json",
   "description": "Connects this macOS or Windows Codex device through secure account-based device claiming.",
   "homepage": "https://github.com/ElmMoneyTree/CodexControlPlugin",

@@ -2,7 +2,7 @@
 
 这个插件用于替代目标电脑上的独立 `Codex Device Agent` 安装程序。Relay 和 Controller 仍然独立部署。
 
-0.3.3 支持手机新建 Codex / ChatGPT Work 聊天，可选择对应项目。需要同步更新 App 和 Relay；更新插件后重启桌面应用并打开一个已有聊天，加载新增的 MCP 连接组件。
+0.3.4 支持手机新建 Codex / ChatGPT Work 聊天，可选择对应项目。需要同步更新 App 和 Relay；更新插件后重启桌面应用并打开一个已有聊天，加载新增的 MCP 连接组件。
 
 ## 系统要求
 
@@ -25,8 +25,8 @@ codex plugin add codex-control-plugin@codex-control
 
 下面是本地 ZIP 安装方式。
 
-1. 解压 `codex-control-plugin-0.3.3.zip` 到稳定目录。安装后不要移动或删除该目录，因为它是本地插件市场源。
-   如同时取得 `.sha256` 文件，先在 PowerShell 执行 `Get-FileHash .\codex-control-plugin-0.3.3.zip -Algorithm SHA256`，并与文件中的值核对。
+1. 解压 `codex-control-plugin-0.3.4.zip` 到稳定目录。安装后不要移动或删除该目录，因为它是本地插件市场源。
+   如同时取得 `.sha256` 文件，先在 PowerShell 执行 `Get-FileHash .\codex-control-plugin-0.3.4.zip -Algorithm SHA256`，并与文件中的值核对。
 2. 把解压目录添加为 marketplace，然后安装插件。Windows PowerShell 示例（macOS 终端使用对应的绝对路径）：
 
    ```powershell
@@ -62,7 +62,7 @@ bash scripts/macos-agent.sh status
 
 `verify` 检查本机 Codex Desktop 的 Unix socket 和 Keychain helper。`claim` 打开二维码并注册用户级 LaunchAgent，手机批准后自动开始同步；未过期的认领可以重新打开。`status` 的 `state` 应为 `connected`，并显示最新的 `lastSyncAt`。
 
-macOS 数据目录是 `~/Library/Application Support/Codex Control Agent Plugin`：配置文件仅保存设备标识和 Keychain 引用，私钥与令牌保存在 Keychain；`agent.log` 和 `launcher.log` 用于排查启动及同步问题。LaunchAgent 在当前用户登录时启动，异常退出时重试。Codex Desktop 持续不可用 90 秒后正常退出；重新打开任务时由已信任的 Hook 启动，也可手动执行 `bash scripts/macos-agent.sh start`。
+macOS 数据目录是 `~/Library/Application Support/Codex Control Agent Plugin`：配置文件仅保存设备标识和 Keychain 引用，私钥与令牌保存在 Keychain；`agent.log` 和 `launcher.log` 用于排查启动及同步问题。LaunchAgent 在当前用户登录时运行轻量应用监听器：Codex Desktop 启动时自动启动同步 Agent，无需先打开任务；退出 Codex 时立即停止同步 Agent，若进程卡住则在 5 秒后强制清理。Codex 未运行时仅保留启动监听器，不轮询 Relay；重新打开 Codex 后自动恢复同步。临时 IPC 断开不会被误判为退出。已认领设备可执行 `bash scripts/macos-agent.sh start` 立即应用此配置。
 
 macOS 卸载前执行 `bash scripts/macos-agent.sh disconnect`，清理 LaunchAgent 与本机 Keychain 凭据，再执行 `codex plugin remove codex-control-plugin@codex-control`。如需同时撤销服务器凭据，请在手机设备页撤销设备。
 
@@ -82,8 +82,8 @@ codex plugin add codex-control-plugin@codex-control
 - 第一次可信的 Codex 会话启动时，`SessionStart` Hook 会创建短期认领并打开页面；后续会话启动或恢复时会运行 Agent 启动器。
 - 启动器检测单实例锁；Agent 已运行时立即退出，不会重复启动。
 - Agent 在后台轮询 Relay，并连接本机 Codex IPC。
-- Codex Desktop 持续不可用 90 秒后，插件 Agent 自动退出。
-- 仅打开 Codex 首页但没有启动或恢复任务时，`SessionStart` 可能尚未触发；打开任意任务即可。
+- macOS 完成首次注册后，Agent 随 Codex 应用启动和退出；只打开 Codex 首页也会启动。Codex 关闭期间仅保留轻量启动监听器。
+- Windows 仍由会话 Hook 启动；Codex Desktop 持续不可用 90 秒后 Agent 自动退出。
 
 ## 状态和日志
 
